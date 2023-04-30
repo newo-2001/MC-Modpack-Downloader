@@ -4,7 +4,7 @@ import * as download from "download";
 import * as fs from "fs";
 
 const url = "https://api.modpacks.ch/public";
-const RESULT_DIRECTORY = "../mods";
+const RESULT_DIRECTORY = "./mods";
 
 function getManifest(packId, versionId) {
     return fetch(`${url}/modpack/${packId}/${versionId}`);
