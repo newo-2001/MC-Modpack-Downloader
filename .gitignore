@@ -1,4 +1,4 @@
 node_modules
-mods
+mods/*.jar
 manifest.json
 settings.json
