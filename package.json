@@ -10,10 +10,7 @@
   "author": "newo-2001",
   "license": "ISC",
   "dependencies": {
-    "download": "^8.0.0",
-    "node-fetch": "^3.2.6",
-    "request": "^2.88.2",
-    "requests": "^0.3.0"
+    "node-fetch": "^3.2.6"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.6.2"
