@@ -1,4 +1,5 @@
 node_modules
-mods/*.jar
+mods
+!mods/.gitkeep
 manifest.json
 settings.json
