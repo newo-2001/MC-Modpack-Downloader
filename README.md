@@ -25,3 +25,6 @@ If you are downloading from modpacks.ch:
 3. Open this file and change the fields for `pack_id` and `pack_version` to the corresponding values of the requested modpack.
 4. Run the command `node src/modpacks.ch.js` from the root folder
 5. Your newly downloaded mods should be located in the `mods` folder.
+
+## Known problems
+If you encounter cryptic ECONNRESET error messages, chances are some files failed to download because of a socket error. Rerunning the script will usually successfully download the files that failed previously.
