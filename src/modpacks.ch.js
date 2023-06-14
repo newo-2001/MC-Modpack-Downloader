@@ -1,46 +1,35 @@
-import settings from "../settings.json" assert {type: 'json'};
-import fetch from "node-fetch";
-import * as fs from "fs";
+import { loadSettings } from "./settings.js";
+import { downloadToFile } from "./download.js"
 
 const url = "https://api.modpacks.ch/public";
 const RESULT_DIRECTORY = "./mods";
 
-function getManifest(packId, versionId) {
-    return fetch(`${url}/modpack/${packId}/${versionId}`);
+async function downloadManifest(packId, versionId) {
+    try {
+        return (await fetch(`${url}/modpack/${packId}/${versionId}`)).json();
+    } catch (err) {
+        throw new Error(`Failed to download manifest: ${err}`);
+    }
 }
 
-async function download(url, location) {
-    const res = await fetch(url);
-    const fileStream = fs.createWriteStream(location);
-    
-    return new Promise((resolve, reject) => {
-        res.body.pipe(fileStream);
-        res.body.on("error", () => {
-            fileStream.close();
-            reject();
-        });
-        res.body.on("finish", () => {
-            fileStream.close();
-            resolve();
-        });
-    });
-}
-
-async function download_mod(mod) {
+function downloadMod(mod) {
     const dirname = `${RESULT_DIRECTORY}${mod.path.substring(1, mod.path.length-1)}`;
     const filename = `${dirname}/${mod.name}`;
 
-    fs.mkdirSync(dirname, {recursive: true});
-    if (fs.existsSync(filename)) return;
-
-    await download(mod.url, filename);
+    return downloadToFile(mod.url, filename);
 }
 
-console.log("Downloading manifest...");
+try {
+    const settings = await loadSettings();
 
-const manifest = await (await getManifest(settings.pack_id, settings.pack_version)).json();
+    console.log("Downloading manifest...");
+    const manifest = await downloadManifest(settings.pack_id, settings.pack_version);
 
-const files = manifest.files.filter(x => x.url != "");
-console.log(`Found ${files.length} items to download.`);
+    const files = manifest.files.filter(x => x.url);
+    console.log(`Found ${files.length} items to download.`);
 
-await Promise.all(files.map(mod => download_mod(mod).catch(console.error)));
+    await Promise.all(files.map(downloadMod));
+    console.log("Done.")
+} catch (err) {
+    console.error(err);
+}

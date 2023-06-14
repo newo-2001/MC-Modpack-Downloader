@@ -3,3 +3,4 @@ mods
 !mods/.gitkeep
 manifest.json
 settings.json
+.vscode

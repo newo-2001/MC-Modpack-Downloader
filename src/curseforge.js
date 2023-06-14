@@ -1,39 +1,48 @@
-import mods from "../manifest.json" assert {type: 'json'};
-import settings from "../settings.json" assert {type: 'json'};
-import fetch from "node-fetch";
-import * as fs from "fs";
+import { downloadToFile } from "./download.js";
+import { loadSettings } from "./settings.js";
+import { readFile } from "fs/promises";
 
 const BASE_URL = "https://api.curseforge.com/v1";
 const RESULT_DIRECTORY = "./mods";
 
-const headers = {'x-api-key': settings.curseforge_api_key};
+let settings;
 
 export async function download_mod(projectId, fileId) {
-    const metadata = await (await fetch(`${BASE_URL}/mods/${projectId}/files/${fileId}`, {headers})).json();
+    const headers = { "x-api-key": settings.curseforge_api_key };
+
+    const metadata = await (await fetch(`${BASE_URL}/mods/${projectId}/files/${fileId}`, { headers })).json();
     const fileName = metadata.data.fileName;
     const downloadUrl = metadata?.data?.downloadUrl;
-
-    if (fs.existsSync(`${RESULT_DIRECTORY}/${fileName}`)) return;
+    const destination = `${RESULT_DIRECTORY}/${fileName}`;
 
     if (!downloadUrl) {
-        throw new Error(`API did not provide download for file: ${fileName}, please attempt to install this file manually.`);
+        throw new Error(`Curseforge API did not provide download for file: ${fileName}, please attempt to install this file manually.`);
     }
 
-    const res = await fetch(downloadUrl, {headers});
-    const fileStream = fs.createWriteStream(`${RESULT_DIRECTORY}/${fileName}`);
-    
-    await new Promise((resolve, reject) => {
-        res.body.pipe(fileStream);
-        res.body.on("error", reject);
-        res.body.on("finish", resolve);
-    });
+    await downloadToFile(downloadUrl, destination, { headers });
 }
 
-console.log(`Downloading ${mods.files.length} mods...`);
-const tasks = [];
-for (const mod of mods.files) {
-    tasks.push(download_mod(mod.projectID, mod.fileID).catch(console.error));
+async function loadManifest() {
+    try {
+        return JSON.parse(await readFile("manifest.json"));
+    } catch {
+        throw new Error("Failed to open manifest.json, please provide a valid manifest file.");
+    }
 }
 
-await Promise.all(tasks);
-console.log("Done.")
+try {
+    settings = await loadSettings();
+
+    const manifest = await loadManifest();
+    console.log(`Downloading ${manifest.files.length} mods...`);
+
+    const files = manifest.files.map(mod => download_mod(mod.projectID, mod.fileID));
+
+    (await Promise.allSettled(files))
+        .filter(res => res.status == "rejected")
+        .forEach(res => console.warn(res.reason.message));
+
+    console.log("Done.")
+} catch (err) {
+    console.error(err);
+}

@@ -7,7 +7,10 @@ Because all the launchers break every other week and I can't be bothered to swit
 # How to use
 
 ## Prerequisites
-- Node.js
+- [Node.js](https://nodejs.org/en)
+
+This projected has been tested for Node 19.7.0
+If you are experiencing any issues on other versions, please open an issue on GitHub and I may consider backporting support to older versions of node.
 
 ## Running the script
 If you are downloading from curseforge:
@@ -25,6 +28,3 @@ If you are downloading from modpacks.ch:
 3. Open this file and change the fields for `pack_id` and `pack_version` to the corresponding values of the requested modpack.
 4. Run the command `node src/modpacks.ch.js` from the root folder
 5. Your newly downloaded mods should be located in the `mods` folder.
-
-## Known problems
-If you encounter cryptic ECONNRESET error messages, chances are some files failed to download because of a socket error. Rerunning the script will usually successfully download the files that failed previously.
