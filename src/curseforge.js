@@ -7,6 +7,13 @@ const RESULT_DIRECTORY = "./mods";
 
 let settings;
 
+class NoCurseForgeDownloadException extends Error {
+    constructor(mod) {
+        super(`CurseForge API did not provide download for file: ${mod}, please attempt to download this file manually.`);
+        this.name = "NoCurseForgeDownloadException";
+    }
+}
+
 export async function download_mod(projectId, fileId) {
     const headers = { "x-api-key": settings.curseforge_api_key };
 
@@ -16,7 +23,7 @@ export async function download_mod(projectId, fileId) {
     const destination = `${RESULT_DIRECTORY}/${fileName}`;
 
     if (!downloadUrl) {
-        throw new Error(`Curseforge API did not provide download for file: ${fileName}, please attempt to install this file manually.`);
+        throw new NoCurseForgeDownloadException(fileName);
     }
 
     await downloadToFile(downloadUrl, destination, { headers });
@@ -38,9 +45,17 @@ try {
 
     const files = manifest.files.map(mod => download_mod(mod.projectID, mod.fileID));
 
-    (await Promise.allSettled(files))
+    let errors = (await Promise.allSettled(files))
         .filter(res => res.status == "rejected")
-        .forEach(res => console.warn(res.reason.message));
+        .map(res => res.reason);
+    
+    for (let err of errors) {
+        if (err instanceof NoCurseForgeDownloadException) {
+            console.warn(err.message);
+        } else {
+            console.error(err);
+        }
+    }
 
     console.log("Done.")
 } catch (err) {
