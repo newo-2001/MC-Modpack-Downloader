@@ -7,7 +7,7 @@ import { finished } from "stream/promises";
 function makeWriteStream(location) {
     return new Promise((resolve, reject) => {
         fs.mkdir(path.dirname(location), { recursive: true }, (err, _) => {
-            if (err) reject(err);
+            if (err) return reject(err);
             resolve(fs.createWriteStream(location));
         })
     })
