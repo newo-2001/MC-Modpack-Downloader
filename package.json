@@ -2,7 +2,7 @@
   "name": "mcmodpackdownloader",
   "version": "1.0.0",
   "description": "",
-  "main": "src/curseforge.js",
+  "main": "dist/curseforge.js",
   "type": "module",
   "scripts": {
     "build": "tsc",
