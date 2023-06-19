@@ -9,7 +9,7 @@ Because all the launchers break every other week and I can't be bothered to swit
 ## Prerequisites
 - [Node.js](https://nodejs.org/en)
 
-This projected has been tested for Node 19.7.0
+This project has been tested for Node 19.7.0
 If you are experiencing any issues on other versions, please open an issue on GitHub and I may consider backporting support to older versions of node.
 
 ## Running the script

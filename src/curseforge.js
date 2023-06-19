@@ -14,7 +14,7 @@ class NoCurseForgeDownloadException extends Error {
     }
 }
 
-export async function download_mod(projectId, fileId) {
+async function download_mod(projectId, fileId) {
     const headers = { "x-api-key": settings.curseforge_api_key };
 
     const metadata = await (await fetch(`${BASE_URL}/mods/${projectId}/files/${fileId}`, { headers })).json();
@@ -45,7 +45,7 @@ try {
 
     const files = manifest.files.map(mod => download_mod(mod.projectID, mod.fileID));
 
-    let errors = (await Promise.allSettled(files))
+    const errors = (await Promise.allSettled(files))
         .filter(res => res.status == "rejected")
         .map(res => res.reason);
     
