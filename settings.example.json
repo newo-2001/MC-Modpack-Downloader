@@ -1,5 +1,8 @@
 {
+    "output_directory": "mods",
     "curseforge_api_key": "API_KEY_HERE",
-    "pack_id": "PACK_ID_HERE",
-    "pack_version": "PACK_VERSION_HERE"
+    "modpack": {
+        "id": 99,
+        "version": 6475
+    }
 }
