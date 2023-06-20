@@ -3,6 +3,10 @@
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
         "target": "ES2020",
+        "lib": ["ESNext"],
+        "types": ["node", "reflect-metadata"],
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
         "sourceMap": true,
         "outDir": "dist",
         "esModuleInterop": true

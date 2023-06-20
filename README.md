@@ -28,6 +28,6 @@ If you are downloading from curseforge:
 
 If you are downloading from modpacks.ch:
 1. Copy the file `settings.example.json` and rename it to `settings.json`.
-2. Open this file and change the values in the `modpack` field to the corresponding values found on the [feed-the-beast website](https://www.feed-the-beast.com/).
+2. Open this file and change the values in the `modpacks.ch -> modpack` field to the corresponding values found on the [feed-the-beast website](https://www.feed-the-beast.com/).
 3. Open a terminal in the root directory and run the command `npm run modpacks.ch`.
 4. Your newly downloaded mods should be located in the output directory (default: `mods`).
