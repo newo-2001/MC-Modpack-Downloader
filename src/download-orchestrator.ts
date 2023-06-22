@@ -2,10 +2,12 @@ import { inject, injectable } from "inversify";
 import { ABSTRACTIONS } from "./abstractions/abstractions.js";
 import { ModProvider, ModpackManifest } from "./abstractions/mod-provider.js";
 import { NoCurseForgeDownloadException } from "./mod-providers/curseforge/curseforge-types.js";
-import { join } from "path";
-import { openWritableFileStream } from "./utils.js";
+import { dirname, join } from "path";
 import { finished } from "stream/promises";
-import { runTasks } from "./task-queue.js";
+import { ConcurrentTask, ConcurrentTaskProgress } from "./concurrent-task.js";
+import { Presets, SingleBar } from "cli-progress";
+import { WriteStream, createWriteStream } from "fs";
+import { mkdir } from "fs/promises";
 
 @injectable()
 export class DownloadOrchestrator<TPackId, TModId> {
@@ -23,11 +25,21 @@ export class DownloadOrchestrator<TPackId, TModId> {
         const fileAmount = manifest.files.length;
         console.log(`Downloading ${fileAmount} files...`);
 
-        const files = manifest.files.map(mod => () => this.downloadMod(mod));
-        
-        const succeeded = (await runTasks(files))
+        const downloadTasks = manifest.files.map(mod => () => this.downloadMod(mod));
+        const task = new ConcurrentTask(downloadTasks);
+
+        const progressBar = new SingleBar({}, Presets.shades_classic);
+        progressBar.start(downloadTasks.length, 0);
+
+        task.on(ConcurrentTask.ProgressEvent, (progress: ConcurrentTaskProgress) => {
+            progressBar.update(progress.finished);
+        });
+
+        const succeeded = (await task.run())
             .filter(download => download.status == "fulfilled")
             .length;
+
+        progressBar.stop();
 
         console.log(`Successfully downloaded ${succeeded}/${fileAmount} files.`);
     }
@@ -48,4 +60,9 @@ export class DownloadOrchestrator<TPackId, TModId> {
             throw err;
         }
     }
+}
+
+async function openWritableFileStream(location: string): Promise<WriteStream> {
+    await mkdir(dirname(location), { recursive: true });
+    return createWriteStream(location);
 }
