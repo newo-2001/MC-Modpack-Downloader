@@ -1,5 +1,8 @@
 {
-    "outputDirectory": "mods",
+    "downloads": {
+        "concurrency": 20,
+        "outputDirectory": "mods"
+    },
     "curseforge": {
         "apiKey": "API_KEY_HERE"
     },

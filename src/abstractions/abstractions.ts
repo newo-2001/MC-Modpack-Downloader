@@ -1,10 +1,12 @@
 export const ABSTRACTIONS = {
     Settings: {
         Providers: {
-            CurseForge: "Settings.CurseForge",
+            CurseForge: Symbol()
         },
-        OutputDirectory: "Settings.OutputDirectory",
+        Downloads: Symbol()
     },
-    ModProvider: Symbol.for("ModProvider"),
-    ModpackId: "ModpackId"
+    Services: {
+        ModProvider: Symbol(),
+    },
+    ModpackId: Symbol()
 };

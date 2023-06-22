@@ -42,13 +42,13 @@ try {
 function createDIContainer(): Container {
     const container = new Container();
 
-    container.bind(ABSTRACTIONS.Settings.OutputDirectory).toConstantValue(settings?.outputDirectory ?? "mods");
+    container.bind(ABSTRACTIONS.Settings.Downloads).toConstantValue(settings.downloads);
     
     return container;
 }
 
 function registerDependencies(provider: ModProvider, container: Container): void {
-    container.bind(ABSTRACTIONS.ModProvider).to(PROVIDERS[provider]).inSingletonScope();
+    container.bind(ABSTRACTIONS.Services.ModProvider).to(PROVIDERS[provider]).inSingletonScope();
 
     switch (provider) {
         case "curseforge":

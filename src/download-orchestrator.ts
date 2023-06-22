@@ -8,12 +8,13 @@ import { ConcurrentTask, ConcurrentTaskProgress } from "./concurrent-task.js";
 import { Presets, SingleBar } from "cli-progress";
 import { WriteStream, createWriteStream } from "fs";
 import { mkdir } from "fs/promises";
+import { DownloadSettings } from "./settings.js";
 
 @injectable()
 export class DownloadOrchestrator<TPackId, TModId> {
     constructor(
-        @inject(ABSTRACTIONS.ModProvider) private readonly provider: ModProvider<TModId, TPackId>,
-        @inject(ABSTRACTIONS.Settings.OutputDirectory) private readonly outputDirectory: string
+        @inject(ABSTRACTIONS.Services.ModProvider) private readonly provider: ModProvider<TModId, TPackId>,
+        @inject(ABSTRACTIONS.Settings.Downloads) private readonly downloadSettings: DownloadSettings
     ) { }
 
     public async downloadAllFromModpackId(modpack: TPackId): Promise<void> {
@@ -26,7 +27,7 @@ export class DownloadOrchestrator<TPackId, TModId> {
         console.log(`Downloading ${fileAmount} files...`);
 
         const downloadTasks = manifest.files.map(mod => () => this.downloadMod(mod));
-        const task = new ConcurrentTask(downloadTasks);
+        const task = new ConcurrentTask(downloadTasks, { concurrency: this.downloadSettings.concurrency});
 
         const progressBar = new SingleBar({}, Presets.shades_classic);
         progressBar.start(downloadTasks.length, 0);
@@ -47,7 +48,7 @@ export class DownloadOrchestrator<TPackId, TModId> {
     private async downloadMod(mod: TModId): Promise<void> {
         try {
             const { path, data } = await this.provider.downloadMod(mod);
-            const destination = join(this.outputDirectory, path);
+            const destination = join(this.downloadSettings.outputDirectory, path);
 
             const fileStream = await openWritableFileStream(destination);
             await finished(data.pipe(fileStream));

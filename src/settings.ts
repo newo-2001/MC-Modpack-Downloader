@@ -3,9 +3,14 @@ import { ModpacksChModProviderSettings } from "./mod-providers/modpacks.ch/modpa
 import { readJsonFile } from "./utils.js";
 
 export interface Settings {
-    outputDirectory: string,
+    downloads: DownloadSettings,
     curseforge: CurseForgeModProviderSettings,
     "modpacks.ch": ModpacksChModProviderSettings
+}
+
+export interface DownloadSettings {
+    concurrency: number,
+    outputDirectory: string
 }
 
 export async function loadSettings(file: string = "settings.json"): Promise<Settings> {
