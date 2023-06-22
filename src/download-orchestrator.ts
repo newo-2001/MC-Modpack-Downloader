@@ -19,6 +19,8 @@ export class DownloadOrchestrator<TPackId, TModId> {
 
     public async downloadAllFromModpackId(modpack: TPackId): Promise<void> {
         const manifest = await this.provider.getManifest(modpack);
+
+        console.log(`Downloading files for ${manifest.name}`);
         return this.downloadAllFromManifest(manifest);
     }
 
