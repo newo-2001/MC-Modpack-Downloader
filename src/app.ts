@@ -4,6 +4,7 @@ import { DownloadOrchestrator } from "./download-orchestrator.js";
 import { ABSTRACTIONS } from "./abstractions/abstractions.js";
 import { CurseForgeModProvider } from "./mod-providers/curseforge/curseforge-mod-provider.js";
 import { ModpacksChModProvider } from "./mod-providers/modpacks.ch/modpacks.ch-mod-provider.js";
+import { LocalModProvider } from "./mod-providers/local/local-mod-provider.js";
 import { Settings, loadSettings } from "./settings.js";
 import { exit } from "process";
 
@@ -11,7 +12,8 @@ let settings: Settings;
 
 const PROVIDERS = {
     "curseforge": CurseForgeModProvider,
-    "modpacks.ch": ModpacksChModProvider
+    "modpacks.ch": ModpacksChModProvider,
+    "local": LocalModProvider
 };
 
 const provider = process.argv[2];
@@ -50,16 +52,19 @@ function registerDependencies(provider: ModProvider, container: Container): void
 
     switch (provider) {
         case "curseforge":
-            container.bind(ABSTRACTIONS.Settings.CurseForge).toConstantValue(settings.curseforge);
+            container.bind(ABSTRACTIONS.Settings.Providers.CurseForge).toConstantValue(settings.curseforge);
             container.bind(ABSTRACTIONS.ModpackId).toConstantValue("manifest.json");
             break;
         case "modpacks.ch":
             container.bind(ABSTRACTIONS.ModpackId).toConstantValue(settings["modpacks.ch"].modpack)
             break;
+        case "local":
+            container.bind(ABSTRACTIONS.ModpackId).toConstantValue("debug");
+            break;
     }
 }
 
-type ModProvider = "curseforge" | "modpacks.ch";
+type ModProvider = "curseforge" | "modpacks.ch" | "local";
 
 function isValidModProvider(provider: string): provider is ModProvider {
     return provider in PROVIDERS;

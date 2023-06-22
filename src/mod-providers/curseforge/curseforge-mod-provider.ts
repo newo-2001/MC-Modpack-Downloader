@@ -15,7 +15,7 @@ export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifie
     private readonly httpClient: HttpClient;
     
     constructor(
-        @inject(ABSTRACTIONS.Settings.CurseForge) private settings: CurseForgeModProviderSettings
+        @inject(ABSTRACTIONS.Settings.Providers.CurseForge) private readonly settings: CurseForgeModProviderSettings
     ) {
         const headers = { "x-api-key": this.settings.apiKey };
         this.httpClient = new HttpClient("https://api.curseforge.com/v1", headers);
