@@ -31,3 +31,16 @@ If you are downloading from modpacks.ch:
 2. Open this file and change the values in the `modpacks.ch -> modpack` field to the corresponding values found on the [feed-the-beast website](https://www.feed-the-beast.com/).
 3. Open a terminal in the root directory and run the command `npm run modpacks.ch`.
 4. Your newly downloaded mods should be located in the output directory (default: `mods`).
+
+## Settings
+The `settings.json` file provides several options to customize your experience.
+- **Concurrency** - This defines the amount of downloads that will happen at the same time.
+    
+    :warning: *Changing this to a high value has the risk of downloads timing out due to exhausting system resources.*
+- **Output Directory** is the directory in which the downloaded files will be placed. The output directory is relative to this directory.
+- **Curseforge** This section contains settings for the `CurseForge` mod provider, these won't be used by other providers.
+    - **Api Key** - CurseForge requires users of their api to provide an api key. You can get yours for free on [their website](https://console.curseforge.com/?#/api-keys) after logging in.
+    
+        :warning: *This key is sensative information, you shouldn't post it online.*
+- **Modpacks.ch** This section contains settings for the `Modpacks.ch` mod provider, these won't be used by other providers.
+    - **Modpack** - This block uniquely identifies the modpack you are trying to download. These values can be found on the [ftb website](https://www.feed-the-beast.com/).
