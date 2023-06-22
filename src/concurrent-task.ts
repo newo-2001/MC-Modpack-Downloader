@@ -17,38 +17,57 @@ const defaultConcurrentTaskOptions: ConcurrentTaskOptions = {
 }
 
 export class ConcurrentTask<T> extends EventEmitter {
-    private results: PromiseSettledResult<Awaited<T>>[] = [];
+    private results: PromiseSettledResult<T>[] = [];
+    private totalTasks: number;
 
     constructor(private tasks: Task<T>[], private readonly options?: ConcurrentTaskOptions) {
         super();
+        this.totalTasks = tasks.length;
     }
 
-    public run(): Promise<PromiseSettledResult<Awaited<T>>[]> {
-        return new Promise(async (resolve, reject) => {
-            const batchSize = this.options?.concurrency ?? defaultConcurrentTaskOptions.concurrency;
+    public async run(): Promise<PromiseSettledResult<T>[]> {
+        const concurrency = this.options?.concurrency ?? defaultConcurrentTaskOptions.concurrency;
 
-            do {
-                const batch = this.tasks.splice(0, batchSize)
-                    .map(task => task());
+        return new Promise((resolve, _) => {
+            this.on(ConcurrentTask.FinishedEvent, () => resolve(this.results));
 
-                this.results.push(...await Promise.allSettled(batch));
-                
-                this.emit(ConcurrentTask.ProgressEvent, this.progress());
-            } while (this.tasks.length > 0);
+            for (let i = 0; i < concurrency; i++) {
+                this.nextTask();
+            }
+        })
+    }
 
-            resolve(this.results);
-        });
+    private async nextTask(): Promise<void> {
+        if (this.tasks.length == 0) {
+            if (this.results.length == this.totalTasks) {
+                this.emit(ConcurrentTask.FinishedEvent);
+            }
+
+            return;
+        }
+
+        try {
+            const result = await this.tasks.shift()();
+            this.results.push({ status: "fulfilled", value: result });
+
+            this.nextTask();
+        } catch (err) {
+            this.results.push({ status: "rejected", reason: err });
+        }
+        
+        this.emit(ConcurrentTask.ProgressEvent, this.progress());
     }
 
     public progress(): ConcurrentTaskProgress {
-        const finished = this.results.length;
-        const remaining = this.tasks.length;
+        const remaining = this.totalTasks - this.results.length;
 
         return {
-            finished, remaining,
-            total: finished + remaining
+            remaining,
+            finished: this.results.length,
+            total: this.totalTasks
         };
     }
 
     public static ProgressEvent: symbol = Symbol();
+    public static FinishedEvent: symbol = Symbol();
 }
