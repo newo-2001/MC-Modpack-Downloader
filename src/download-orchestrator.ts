@@ -38,13 +38,20 @@ export class DownloadOrchestrator<TPackId, TModId> {
             progressBar.update(progress.finished);
         });
 
-        const succeeded = (await task.run())
-            .filter(download => download.status == "fulfilled")
-            .length;
+        const results = await task.run();
+        const succeeded = results.filter(download => download.status == "fulfilled");
+        const failed = results.filter(download => download.status == "rejected")
+            .map(res => (res as PromiseRejectedResult).reason);
 
         progressBar.stop();
 
-        console.log(`Successfully downloaded ${succeeded}/${fileAmount} files.`);
+        console.log(`Successfully downloaded ${succeeded.length}/${fileAmount} files.`);
+
+        failed.forEach(err => {
+            if (err instanceof NoCurseForgeDownloadException) {
+                console.warn(err.message);
+            }
+        });
     }
 
     private async downloadMod(mod: TModId): Promise<void> {
@@ -55,11 +62,10 @@ export class DownloadOrchestrator<TPackId, TModId> {
             const fileStream = await openWritableFileStream(destination);
             await finished(data.pipe(fileStream));
         } catch (err) {
-            if (err instanceof NoCurseForgeDownloadException) {
-                console.warn(err.message);
-            } else {
-                console.error(err);
+            if (!(err instanceof NoCurseForgeDownloadException)) {
+                console.error(`\n${err}`);
             }
+
             throw err;
         }
     }
