@@ -32,6 +32,15 @@ If you are downloading from modpacks.ch:
 3. Open a terminal in the root directory and run the command `npm run modpacks.ch`.
 4. Your newly downloaded mods should be located in the output directory (default: `mods`).
 
+## Using the downloaded files with MultiMC
+1. Create a new instance in MultiMC by click `Add Instance`.
+2. Give it an appropriate name and select the correct minecraft version.
+3. After the instance is created, click `Edit Instance` and navigate to the `Version` tab.
+4. Press `Install Forge` (or Fabric if applicable), you probably want the recommended version.
+5. Press the `Open .minecraft` button
+6. - If you downloaded the files from CurseForge you want to create a new directory called `mods` and drag the downloaded files in here. Don't forget to manually download any mods that reported having no download url.
+   - If you downloaded with modpacks.ch you want to drag all the downloaded files into directory directly.
+
 ## Settings
 The `settings.json` file provides several options to customize your experience.
 - **Concurrency** - This defines the amount of downloads that will happen at the same time.
