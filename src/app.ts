@@ -43,16 +43,17 @@ function createDIContainer(): Container {
     const container = new Container();
 
     container.bind(ABSTRACTIONS.Settings.Downloads).toConstantValue(settings.downloads);
+    container.bind(ABSTRACTIONS.Settings.Providers.CurseForge).toConstantValue(settings.curseforge);
+    container.bind(ABSTRACTIONS.Services.CurseForgeModProvider).to(CurseForgeModProvider).inTransientScope();
     
     return container;
 }
 
 function registerDependencies(provider: ModProvider, container: Container): void {
-    container.bind(ABSTRACTIONS.Services.ModProvider).to(PROVIDERS[provider]).inSingletonScope();
+    container.bind(ABSTRACTIONS.Services.ModProvider).to(PROVIDERS[provider]).inTransientScope();
 
     switch (provider) {
         case "curseforge":
-            container.bind(ABSTRACTIONS.Settings.Providers.CurseForge).toConstantValue(settings.curseforge);
             container.bind(ABSTRACTIONS.ModpackId).toConstantValue("manifest.json");
             break;
         case "modpacks.ch":

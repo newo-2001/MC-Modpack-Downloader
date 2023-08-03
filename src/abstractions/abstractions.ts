@@ -7,6 +7,7 @@ export const ABSTRACTIONS = {
     },
     Services: {
         ModProvider: Symbol(),
+        CurseForgeModProvider: Symbol()
     },
     ModpackId: Symbol()
 };

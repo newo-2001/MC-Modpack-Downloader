@@ -12,10 +12,3 @@ export interface CurseForgeModMetadata {
     downloadUrl?: string,
     fileName: string
 }
-
-export class NoCurseForgeDownloadException extends Error {
-    constructor(fileName: string) {
-        super(`CurseForge API did not provide download for file: ${fileName}, please attempt to download this file manually.`);
-        this.name = "NoCurseForgeDownloadException";
-    }
-}

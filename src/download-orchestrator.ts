@@ -1,7 +1,6 @@
 import { inject, injectable } from "inversify";
 import { ABSTRACTIONS } from "./abstractions/abstractions.js";
 import { ModProvider, ModpackManifest } from "./abstractions/mod-provider.js";
-import { NoCurseForgeDownloadException } from "./mod-providers/curseforge/curseforge-types.js";
 import { dirname, join } from "path";
 import { finished } from "stream/promises";
 import { ConcurrentTask, ConcurrentTaskProgress } from "./concurrent-task.js";
@@ -9,6 +8,7 @@ import { Presets, SingleBar } from "cli-progress";
 import { WriteStream, createWriteStream } from "fs";
 import { mkdir } from "fs/promises";
 import { DownloadSettings } from "./settings.js";
+import { NoDownloadException } from "./exceptions/no-download-exception.js";
 
 @injectable()
 export class DownloadOrchestrator<TPackId, TModId> {
@@ -48,7 +48,7 @@ export class DownloadOrchestrator<TPackId, TModId> {
         console.log(`Successfully downloaded ${succeeded.length}/${fileAmount} files.`);
 
         failed.forEach(err => {
-            if (err instanceof NoCurseForgeDownloadException) {
+            if (err instanceof NoDownloadException) {
                 console.warn(err.message);
             }
         });
@@ -62,7 +62,7 @@ export class DownloadOrchestrator<TPackId, TModId> {
             const fileStream = await openWritableFileStream(destination);
             await finished(data.pipe(fileStream));
         } catch (err) {
-            if (!(err instanceof NoCurseForgeDownloadException)) {
+            if (!(err instanceof NoDownloadException)) {
                 console.error(`\n${err}`);
             }
 

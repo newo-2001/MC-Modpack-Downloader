@@ -7,8 +7,8 @@ import {
     CurseForgeModIdentifier,
     CurseForgeModMetadata,
     CurseForgeModProviderSettings, 
-    NoCurseForgeDownloadException
 } from "./curseforge-types.js";
+import { NoDownloadException } from "../../exceptions/no-download-exception.js";
 
 @injectable()
 export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifier, string> {
@@ -26,7 +26,7 @@ export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifie
 
         // For some reason some downloadUrl's are null even though the api says they are available
         if (!isAvailable || !downloadUrl) {
-            throw new NoCurseForgeDownloadException(fileName);
+            throw new NoDownloadException(fileName);
         }
         
         return {

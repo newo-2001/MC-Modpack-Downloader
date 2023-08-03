@@ -13,24 +13,26 @@ Because all the launchers break every other week and I can't be bothered to swit
 This project has been tested for Node 19.7.0.
 If you are experiencing any issues on other versions, please open an issue on [GitHub](https://github.com/newo-2001/MC-Modpack-Downloader) and I may consider backporting support to older versions of Node.
 
-## Installing external dependencies
-If this is your first time running one of the scripts or you have downloaded a newer version, you have to download the required external dependencies from NPM. The instructions for which are listed below.
-1. Open a terminal in this folder and run the command `npm install`
+## Initial setup
+If this is your first time running one of the scripts or you have downloaded a newer version, you have to perform addition setup:
+1. Open a terminal in this folder and run the command `npm install`.
+2. Copy the file `settings.example.json` and rename it to `settings.json`.
+3. Acquire an API key from [the CurseForge website](https://console.curseforge.com/?#/api-keys) after logging in.
+4. Replace the `API_KEY_HERE` under the curseforge section with your api key in the `settings.json` file.
+    
+        ℹ️ Note that this step is still required, even if you don't intend on downloading from CurseForge.
+        Other providers might rely on CurseForge behind the scenes.
 
 ## Running the scripts
 If you are downloading from curseforge:
 1. Place your `manifest.json` file in the root directory of the project.
-2. Acquire an API key from [the CurseForge website](https://console.curseforge.com/?#/api-keys) after logging in.
-3. Copy the file `settings.example.json` and rename it to `settings.json`.
-4. Replace the `API_KEY_HERE` with your api key in the `settings.json` file.
-5. Open a terminal in the root directory and run the command `npm run curseforge`.
-6. Your newly downloaded mods should be located in the output directory (default: `mods`).
+2. Open a terminal in the root directory and run the command `npm run curseforge`.
+3. Your newly downloaded mods should be located in the output directory (default: `mods`).
 
 If you are downloading from modpacks.ch:
-1. Copy the file `settings.example.json` and rename it to `settings.json`.
-2. Open this file and change the values in the `modpacks.ch -> modpack` field to the corresponding values found on the [feed-the-beast website](https://www.feed-the-beast.com/).
-3. Open a terminal in the root directory and run the command `npm run modpacks.ch`.
-4. Your newly downloaded mods should be located in the output directory (default: `mods`).
+1. Open `settings.json` and change the values in the `modpacks.ch -> modpack` field to the corresponding values found on the [feed-the-beast website](https://www.feed-the-beast.com/).
+2. Open a terminal in the root directory and run the command `npm run modpacks.ch`.
+3. Your newly downloaded mods should be located in the output directory (default: `mods`).
 
 ## Using the downloaded files with MultiMC
 1. Create a new instance in MultiMC by click `Add Instance`.
@@ -45,11 +47,11 @@ If you are downloading from modpacks.ch:
 The `settings.json` file provides several options to customize your experience.
 - **Concurrency** - This defines the amount of downloads that will happen at the same time.
     
-    :warning: *Changing this to a high value has the risk of downloads timing out due to exhausting system resources.*
+        ⚠️ Changing this to a high value has the risk of downloads timing out due to exhausting system resources.
 - **Output Directory** is the directory in which the downloaded files will be placed. The output directory is relative to this directory.
 - **Curseforge** This section contains settings for the `CurseForge` mod provider, these won't be used by other providers.
     - **Api Key** - CurseForge requires users of their api to provide an api key. You can get yours for free on [their website](https://console.curseforge.com/?#/api-keys) after logging in.
     
-        :warning: *This key is sensative information, you shouldn't post it online.*
+            ⚠️ This key is sensative information, you shouldn't post it online.
 - **Modpacks.ch** This section contains settings for the `Modpacks.ch` mod provider, these won't be used by other providers.
     - **Modpack** - This block uniquely identifies the modpack you are trying to download. These values can be found on the [ftb website](https://www.feed-the-beast.com/).
