@@ -6,9 +6,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "curseforge": "ts-node-esm src/app.ts curseforge",
-    "modpacks.ch": "ts-node-esm src/app.ts modpacks.ch",
-    "local": "ts-node-esm src/app.ts local",
+    "curseforge": "node --no-warnings --loader ts-node/esm src/app.ts curseforge",
+    "modpacks.ch": "node --no-warnings --loader ts-node/esm src/app.ts modpacks.ch",
+    "local": "node --no-warnings --loader ts-node/esm src/app.ts local",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "newo-2001",
