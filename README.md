@@ -24,7 +24,7 @@ If this is your first time running the script you have to perform some additiona
 :information_source: Note that this step is still required, even if you don't intend on downloading from CurseForge.
 Other providers (modpacks.ch) might delegate the download to CurseForge behind the scenes.
 
-## Running the scripts
+## Running the script
 Before downloading a modpack, you need to figure out where you are downloading it from. Currently CurseForge and modpacks.ch (FTB) are supported. If you are sourcing your modpacks from a different provider, please let me know by opening a [GitHub issue](https://github.com/newo-2001/MC-Modpack-Downloader/issues), I will try to add support for it if possible.
 
 There are slight differences between the two:
@@ -51,7 +51,7 @@ Refer to [Using the downloaded files](#using-the-downloaded-files), to install t
 ## Using the downloaded files
 The downloaded files can be used with virtually any launcher that allows for creating custom profiles. These instructions are written for MultiMC, but similar steps should apply to whatever launcher you are using.
 
-1. Create a new instance in MultiMC by click `Add Instance`.
+1. Create a new instance in MultiMC by clicking `Add Instance`.
 2. Give it an appropriate name and select the correct minecraft version.
 3. After the instance is created, click `Edit Instance` and navigate to the `Version` tab.
 4. Press `Install Forge` (or Fabric if applicable), you probably want the recommended version.
