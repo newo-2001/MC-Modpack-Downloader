@@ -8,7 +8,7 @@ import {
     CurseForgeModMetadata,
     CurseForgeModProviderSettings, 
 } from "./curseforge-types.js";
-import { NoDownloadException } from "../../exceptions/no-download-exception.js";
+import { HttpException, InvalidApiKeyException, NoDownloadException } from "../../exceptions.js";
 import { Logger } from "winston";
 
 @injectable()
@@ -24,16 +24,24 @@ export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifie
     }
 
     public async downloadMod(mod: CurseForgeModIdentifier): Promise<FileDownload> {
-        const { downloadUrl, isAvailable, fileName } = await this.getModMetadata(mod);
+        try {
+            const { downloadUrl, isAvailable, fileName } = await this.getModMetadata(mod);
 
-        // For some reason some downloadUrl's are null even though the api says they are available
-        if (!isAvailable || !downloadUrl) {
-            throw new NoDownloadException(fileName);
-        }
-        
-        return {
-            path: fileName,
-            data: await this.httpClient.download(downloadUrl)
+            // For some reason some downloadUrl's are null even though the api says they are available
+            if (!isAvailable || !downloadUrl) {
+                throw new NoDownloadException(fileName);
+            }
+
+            return {
+                path: fileName,
+                data: await this.httpClient.download(downloadUrl)
+            }
+        } catch (err) {
+            if (err instanceof HttpException && err.statusCode == 403) {
+                throw new InvalidApiKeyException();
+            }
+
+            throw err;
         }
     }
 

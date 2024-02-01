@@ -53,6 +53,7 @@ export class ConcurrentTask<T> extends EventEmitter {
             this.nextTask();
         } catch (err) {
             this.results.push({ status: "rejected", reason: err });
+            this.emit(ConcurrentTask.FailureEvent, err);
         }
         
         this.emit(ConcurrentTask.ProgressEvent, this.progress());
@@ -70,4 +71,5 @@ export class ConcurrentTask<T> extends EventEmitter {
 
     public static ProgressEvent: symbol = Symbol();
     public static FinishedEvent: symbol = Symbol();
+    public static FailureEvent: symbol = Symbol();
 }

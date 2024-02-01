@@ -5,7 +5,7 @@ import { ModpacksChModManifest, ModpacksChModpackIdentifier, ModpacksChModpackMa
 import { join } from "path";
 import { ABSTRACTIONS } from "../../abstractions/abstractions.js";
 import { CurseForgeModIdentifier } from "../curseforge/curseforge-types.js";
-import { NoDownloadException } from "../../exceptions/no-download-exception.js";
+import { NoDownloadException } from "../../exceptions.js";
 import { Logger } from "winston";
 import * as path from "path";
 

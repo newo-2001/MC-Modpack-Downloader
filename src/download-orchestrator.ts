@@ -8,8 +8,9 @@ import { Presets, SingleBar } from "cli-progress";
 import { WriteStream, createWriteStream } from "fs";
 import { mkdir } from "fs/promises";
 import { DownloadSettings } from "./settings.js";
-import { NoDownloadException } from "./exceptions/no-download-exception.js";
+import { InvalidApiKeyException, NoDownloadException } from "./exceptions.js";
 import { Logger } from "winston";
+import { exit } from "process";
 
 @injectable()
 export class DownloadOrchestrator<TPackId, TModId> {
@@ -41,6 +42,14 @@ export class DownloadOrchestrator<TPackId, TModId> {
             progressBar.update(progress.finished);
         });
 
+        task.on(ConcurrentTask.FailureEvent, (err) => {
+            if (err instanceof InvalidApiKeyException) {
+                console.error("\nError: " + err.message);
+                this.logger.error(err);
+                exit(1);
+            }
+        })
+
         const results = await task.run();
         const succeeded = results.filter(download => download.status == "fulfilled");
         const failed = results.filter(download => download.status == "rejected")
@@ -70,11 +79,11 @@ export class DownloadOrchestrator<TPackId, TModId> {
 
             this.logger.debug(`Successfully downloaded mod: ${name} to ${path}`);
         } catch (err) {
-            if (!(err instanceof NoDownloadException)) {
+            if (err instanceof NoDownloadException) {
+                this.logger.warn(err);
+            } else if (!(err instanceof InvalidApiKeyException)) {
                 console.error(`\n${err}`);
                 this.logger.error(`Failed to download mod ${name}, ${err}`);
-            } else {
-                this.logger.warning(err);
             }
 
             throw err;
