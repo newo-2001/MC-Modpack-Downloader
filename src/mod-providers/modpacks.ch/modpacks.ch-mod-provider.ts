@@ -6,14 +6,19 @@ import { join } from "path";
 import { ABSTRACTIONS } from "../../abstractions/abstractions.js";
 import { CurseForgeModIdentifier } from "../curseforge/curseforge-types.js";
 import { NoDownloadException } from "../../exceptions/no-download-exception.js";
+import { Logger } from "winston";
+import * as path from "path";
 
 @injectable()
 export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest, ModpacksChModpackIdentifier> {
-    private readonly httpClient = new HttpClient("https://api.modpacks.ch/public");
+    private readonly httpClient: HttpClient;
 
     public constructor(
-        @inject(ABSTRACTIONS.Services.CurseForgeModProvider) private readonly curseforge: ModProvider<CurseForgeModIdentifier, string>
-    ) { }
+        @inject(ABSTRACTIONS.Services.CurseForgeModProvider) private readonly curseforge: ModProvider<CurseForgeModIdentifier, string>,
+        @inject(Logger) private readonly logger: Logger
+    ) {
+        this.httpClient = new HttpClient("https://api.modpacks.ch/public", {}, logger);
+    }
 
     public async downloadMod(mod: ModpacksChModManifest): Promise<FileDownload> {
         const dirname = mod.path.substring(1, mod.path.length-1);
@@ -22,11 +27,13 @@ export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest,
         if (mod.url) {
             return {
                 path,
-                data: await HttpClient.download(mod.url)
+                data: await this.httpClient.download(mod.url)
             };
         } else if (mod.curseforge) {
             const { file, project } = mod.curseforge;
             const modId: CurseForgeModIdentifier = { fileID: "" + file, projectID: "" + project };
+
+            this.logger.debug(`Delegating download for file: ${path} to CurseForge`);
 
             return {
                 path,
@@ -45,11 +52,17 @@ export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest,
     }
 
     public getFullModpackManifest(modpackId: number): Promise<ModpacksChModpackManifest> {
+        this.logger.info(`Downloading modpack manifest for modpack with id: ${modpackId}`);
         return this.httpClient.get<ModpacksChModpackManifest>(`/modpack/${modpackId}`);
     }
 
     public getModpackVersionManifest(modpack: ModpacksChModpackIdentifier): Promise<ModpacksChModpackVersionManifest> {
         const url = `/modpack/${modpack.id}/${modpack.version}`;
+        this.logger.info(`Downloading modpack version manifest for modpack with id: ${modpack.id}, version: ${modpack.version}`);
         return this.httpClient.get<ModpackManifest<ModpacksChModManifest>>(url);
+    }
+
+    public getModName(modId: ModpacksChModManifest): string {
+        return path.join(modId.path, modId.name);
     }
 }

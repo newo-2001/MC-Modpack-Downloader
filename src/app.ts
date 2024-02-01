@@ -7,6 +7,7 @@ import { ModpacksChModProvider } from "./mod-providers/modpacks.ch/modpacks.ch-m
 import { LocalModProvider } from "./mod-providers/local/local-mod-provider.js";
 import { Settings, loadSettings } from "./settings.js";
 import { exit } from "process";
+import { Logger, createLogger, format, transports } from "winston";
 
 let settings: Settings;
 
@@ -32,6 +33,11 @@ registerDependencies(provider, container);
 
 const orchestrator = container.resolve(DownloadOrchestrator);
 const modpackId = container.get(ABSTRACTIONS.ModpackId);
+const logger = container.get(Logger);
+
+logger.info(`Using ${provider} provider`);
+logger.info(`Using concurrency: ${settings.downloads.concurrency}`);
+logger.info(`Log level set to ${settings.logLevel}`);
 
 try {
     await orchestrator.downloadAllFromModpackId(modpackId);
@@ -42,6 +48,7 @@ try {
 function createDIContainer(): Container {
     const container = new Container();
 
+    container.bind(Logger).toConstantValue(configureLogger());
     container.bind(ABSTRACTIONS.Settings.Downloads).toConstantValue(settings.downloads);
     container.bind(ABSTRACTIONS.Settings.Providers.CurseForge).toConstantValue(settings.curseforge);
     container.bind(ABSTRACTIONS.Services.CurseForgeModProvider).to(CurseForgeModProvider).inTransientScope();
@@ -69,4 +76,21 @@ type ModProvider = "curseforge" | "modpacks.ch" | "local";
 
 function isValidModProvider(provider: string): provider is ModProvider {
     return provider in PROVIDERS;
+}
+
+function configureLogger(): Logger {
+    const logFormat = format.printf(({ message, level, timestamp }) => {
+        return `${timestamp} [${level}] ${message}`;
+    })
+
+    return createLogger({
+        level: settings.logLevel ?? "debug",
+        format: format.combine(format.timestamp(), logFormat),
+        transports: [
+            new transports.File({
+                filename: "latest.log",
+                options: { flags: 'w' }
+            })
+        ]
+    })
 }

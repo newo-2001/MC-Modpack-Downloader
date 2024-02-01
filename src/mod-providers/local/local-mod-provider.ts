@@ -18,6 +18,7 @@ export class LocalModProvider implements ModProvider<LocalModIdentifer, string> 
             data: fd.createReadStream()
         };
     }
+
     public getManifest(modpackId: string): Promise<ModpackManifest<LocalModIdentifer>> {
         const files = getFilesRecursive(modpackId)
             .map(path => ({ root: modpackId, path: relative(modpackId, path) }));
@@ -26,6 +27,10 @@ export class LocalModProvider implements ModProvider<LocalModIdentifer, string> 
             name: basename(modpackId),
             files
         });
+    }
+
+    public getModName(modId: LocalModIdentifer): string {
+        return modId.path;
     }
 }
 

@@ -9,18 +9,21 @@ import { WriteStream, createWriteStream } from "fs";
 import { mkdir } from "fs/promises";
 import { DownloadSettings } from "./settings.js";
 import { NoDownloadException } from "./exceptions/no-download-exception.js";
+import { Logger } from "winston";
 
 @injectable()
 export class DownloadOrchestrator<TPackId, TModId> {
     constructor(
         @inject(ABSTRACTIONS.Services.ModProvider) private readonly provider: ModProvider<TModId, TPackId>,
-        @inject(ABSTRACTIONS.Settings.Downloads) private readonly downloadSettings: DownloadSettings
+        @inject(ABSTRACTIONS.Settings.Downloads) private readonly downloadSettings: DownloadSettings,
+        @inject(Logger) private readonly logger: Logger
     ) { }
 
     public async downloadAllFromModpackId(modpack: TPackId): Promise<void> {
         const manifest = await this.provider.getManifest(modpack);
 
         console.log(`Downloading files for ${manifest.name}`);
+        this.logger.info(`Downloading ${manifest.files.length} files for ${manifest.name}`);
         return this.downloadAllFromManifest(manifest);
     }
 
@@ -46,6 +49,7 @@ export class DownloadOrchestrator<TPackId, TModId> {
         progressBar.stop();
 
         console.log(`Successfully downloaded ${succeeded.length}/${fileAmount} files.`);
+        this.logger.info(`Successfully downloaded ${succeeded.length}/${fileAmount} files, ${failed.length} downloads failed.`);
 
         failed.forEach(err => {
             if (err instanceof NoDownloadException) {
@@ -55,15 +59,22 @@ export class DownloadOrchestrator<TPackId, TModId> {
     }
 
     private async downloadMod(mod: TModId): Promise<void> {
+        const name = this.provider.getModName(mod);
+
         try {
             const { path, data } = await this.provider.downloadMod(mod);
             const destination = join(this.downloadSettings.outputDirectory, path);
 
             const fileStream = await openWritableFileStream(destination);
             await finished(data.pipe(fileStream));
+
+            this.logger.debug(`Successfully downloaded mod: ${name} to ${path}`);
         } catch (err) {
             if (!(err instanceof NoDownloadException)) {
                 console.error(`\n${err}`);
+                this.logger.error(`Failed to download mod ${name}, ${err}`);
+            } else {
+                this.logger.warning(err);
             }
 
             throw err;

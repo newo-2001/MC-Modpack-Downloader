@@ -61,7 +61,8 @@ The downloaded files can be used with virtually any launcher that allows for cre
 
 ## Settings
 The `settings.json` file provides several options to customize your experience.
-- **Concurrency** - This defines the amount of downloads that will happen at the same time.  
+- **LogLevel** - Determines how much information gets logged to `latest.log`, valid values are "debug", "info", "warn", and "error".
+- **Concurrency** - This defines the amount of downloads that will happen at the same time.
 ⚠️ Changing this to a high value has the risk of downloads timing out due to exhausting system resources.
 - **Output Directory** is the directory in which the downloaded files will be placed. The output directory is relative to this directory.
 - **Curseforge** This section contains settings for the `CurseForge` mod provider, these **might** be used by other providers.

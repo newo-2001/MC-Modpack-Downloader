@@ -3,6 +3,7 @@ import { ModpacksChModProviderSettings } from "./mod-providers/modpacks.ch/modpa
 import { readJsonFile } from "./utils.js";
 
 export interface Settings {
+    logLevel: string,
     downloads: DownloadSettings,
     curseforge: CurseForgeModProviderSettings,
     "modpacks.ch": ModpacksChModProviderSettings
