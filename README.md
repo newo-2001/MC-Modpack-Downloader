@@ -20,12 +20,14 @@ If this is your first time running the script you have to perform some additiona
 :information_source: This is the only step that has to be repeated after pulling a new version of the script.
 2. Copy the file `settings.example.json` and rename it to `settings.json`.
 3. Acquire an API key from [the CurseForge website](https://console.curseforge.com/?#/api-keys) after logging in.
-4. Replace the `API_KEY_HERE` under the curseforge section with your api key in the `settings.json` file.  
-:information_source: Note that this step is still required, even if you don't intend on downloading from CurseForge.
-Other providers (modpacks.ch) might delegate the download to CurseForge behind the scenes.
+4. Replace the `API_KEY_HERE` under the curseforge section with your api key in the `settings.json` file.
+
+    > :information_source: This step is still required, even if you don't intend on downloading from CurseForge. Other providers (modpacks.ch) might delegate the download to CurseForge behind the scenes.
+
+    > :information_source: It might take several minutes for CurseForge to start accepting the API key after initial acquisition.
 
 ## Running the script
-Before downloading a modpack, you need to figure out where you are downloading it from. Currently CurseForge and modpacks.ch (FTB) are supported. If you are sourcing your modpacks from a different provider, please let me know by opening a [GitHub issue](https://github.com/newo-2001/MC-Modpack-Downloader/issues), I will try to add support for it if possible.
+Before downloading a modpack, you need to figure out where you are downloading it from. Currently CurseForge and modpacks.ch (FTB) are supported. If you are sourcing your modpacks from a different provider, please let me know by opening a [GitHub issue](https://github.com/newo-2001/MC-Modpack-Downloader/issues), I will try to add support for it.
 
 There are slight differences between the two:
 - CurseForge uses a manifest file to identify a modpack, whereas modpacks.ch uses an id specified in the config.
@@ -63,11 +65,16 @@ The downloaded files can be used with virtually any launcher that allows for cre
 The `settings.json` file provides several options to customize your experience.
 - **LogLevel** - Determines how much information gets logged to `latest.log`, valid values are "debug", "info", "warn", and "error".
 - **Concurrency** - This defines the amount of downloads that will happen at the same time.
-⚠️ Changing this to a high value has the risk of downloads timing out due to exhausting system resources.
+
+    > :warning: Changing this to a high value has the risk of downloads timing out due to exhausting system resources.
+
 - **Output Directory** is the directory in which the downloaded files will be placed. The output directory is relative to this directory.
 - **Curseforge** This section contains settings for the `CurseForge` mod provider, these **might** be used by other providers.
-    - **Api Key** - CurseForge requires users of their api to provide an api key. You can get yours for free on [their website](https://console.curseforge.com/?#/api-keys) after logging in.  
-    ⚠️ This key is sensative information, you shouldn't post it online.
+    - **Api Key** - CurseForge requires users of their api to provide an api key. You can get yours for free on [their website](https://console.curseforge.com/?#/api-keys) after logging in.
+
+    > :warning: This key is sensative information, you shouldn't post it online.
+
 - **Modpacks.ch** This section contains settings for the `Modpacks.ch` mod provider, these **won't** be used by other providers.
-    - **Modpack** - This block uniquely identifies the modpack you are trying to download. These values can be found on the [ftb website](https://www.feed-the-beast.com/) on the page of the respective modpack. It should look something like the image below.  
+    - **Modpack** - This block uniquely identifies the modpack you are trying to download. These values can be found on the [ftb website](https://www.feed-the-beast.com/) on the page of the respective modpack. It should look something like the image below.
+
     ![](docs/images/ftb_pack_id.png)
