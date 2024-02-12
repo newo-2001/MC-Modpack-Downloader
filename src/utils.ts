@@ -1,5 +1,6 @@
 import { PathLike } from "fs";
 import { FileHandle, readFile, readdir } from "fs/promises";
+import { WriteStream } from "tty";
 
 export async function readJsonFile<T>(path: PathLike | FileHandle): Promise<T> {
     try {

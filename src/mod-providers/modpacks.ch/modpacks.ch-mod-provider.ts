@@ -28,7 +28,7 @@ export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest,
             return {
                 path,
                 data: await this.httpClient.download(mod.url)
-            };
+            }
         } else if (mod.curseforge) {
             const { file, project } = mod.curseforge;
             const modId: CurseForgeModIdentifier = { fileID: "" + file, projectID: "" + project };
@@ -47,18 +47,18 @@ export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest,
     public async getManifest(modpack: ModpacksChModpackIdentifier): Promise<ModpackManifest<ModpacksChModManifest>> {
         const { name } = await this.getFullModpackManifest(modpack.id);
         const { files } = await this.getModpackVersionManifest(modpack);
-        
+
         return { name, files };
     }
 
     public getFullModpackManifest(modpackId: number): Promise<ModpacksChModpackManifest> {
-        this.logger.info(`Downloading modpack manifest for modpack with id: ${modpackId}`);
+        this.logger.debug(`Downloading modpack manifest for modpack with id: ${modpackId}`);
         return this.httpClient.get<ModpacksChModpackManifest>(`/modpack/${modpackId}`);
     }
 
     public getModpackVersionManifest(modpack: ModpacksChModpackIdentifier): Promise<ModpacksChModpackVersionManifest> {
         const url = `/modpack/${modpack.id}/${modpack.version}`;
-        this.logger.info(`Downloading modpack version manifest for modpack with id: ${modpack.id}, version: ${modpack.version}`);
+        this.logger.debug(`Downloading modpack version manifest for modpack with id: ${modpack.id}, version: ${modpack.version}`);
         return this.httpClient.get<ModpackManifest<ModpacksChModManifest>>(url);
     }
 

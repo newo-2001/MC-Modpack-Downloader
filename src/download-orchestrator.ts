@@ -23,14 +23,12 @@ export class DownloadOrchestrator<TPackId, TModId> {
     public async downloadAllFromModpackId(modpack: TPackId): Promise<void> {
         const manifest = await this.provider.getManifest(modpack);
 
-        console.log(`Downloading files for ${manifest.name}`);
         this.logger.info(`Downloading ${manifest.files.length} files for ${manifest.name}`);
         return this.downloadAllFromManifest(manifest);
     }
 
     public async downloadAllFromManifest(manifest: ModpackManifest<TModId>): Promise<void> {
         const fileAmount = manifest.files.length;
-        console.log(`Downloading ${fileAmount} files...`);
 
         const downloadTasks = manifest.files.map(mod => () => this.downloadMod(mod));
         const task = new ConcurrentTask(downloadTasks, { concurrency: this.downloadSettings.concurrency});
@@ -43,51 +41,56 @@ export class DownloadOrchestrator<TPackId, TModId> {
         });
 
         task.on(ConcurrentTask.FailureEvent, (err) => {
+            if (err instanceof NoDownloadException) return;
+
+            // Clear current line because we are printing a progress bar
+            process.stdout.clearLine(0);
+
+            if (err instanceof Error) {
+                this.logger.error(err.message);
+                this.logger.debug(err.stack);
+            } else {
+                this.logger.error("Unexpected error occurred, no information provided.");
+            }
+
+            // This error is fatal since it would trigger numerous times
             if (err instanceof InvalidApiKeyException) {
-                console.error("\nError: " + err.message);
-                this.logger.error(err);
                 exit(1);
             }
-        })
+        });
 
         const results = await task.run();
+        progressBar.stop();
+
         const succeeded = results.filter(download => download.status == "fulfilled");
         const failed = results.filter(download => download.status == "rejected")
             .map(res => (res as PromiseRejectedResult).reason);
 
-        progressBar.stop();
+        const failedNoDownload: NoDownloadException[] = failed.filter(x => x instanceof NoDownloadException);
+        const failedFatal = failed.filter(x => !(x instanceof NoDownloadException));
 
-        console.log(`Successfully downloaded ${succeeded.length}/${fileAmount} files.`);
-        this.logger.info(`Successfully downloaded ${succeeded.length}/${fileAmount} files, ${failed.length} downloads failed.`);
+        this.logger.info(`Successfully downloaded ${succeeded.length}/${fileAmount} files`);
 
-        failed.forEach(err => {
-            if (err instanceof NoDownloadException) {
-                console.warn(err.message);
-            }
-        });
+        if (failedNoDownload.length > 0) {
+            const files = failedNoDownload.map(x => x.file).join(",\n\t")
+            this.logger.info(`The following ${failedNoDownload.length} files can't be downloaded through the API, please download them manually:\n\t${files}`);
+        }
+
+        if (failedFatal.length > 0) {
+            this.logger.error(`Modpack is incomplete, ${failedFatal.length} downloads failed unexpectedly`);
+        }
     }
 
     private async downloadMod(mod: TModId): Promise<void> {
         const name = this.provider.getModName(mod);
 
-        try {
-            const { path, data } = await this.provider.downloadMod(mod);
-            const destination = join(this.downloadSettings.outputDirectory, path);
+        const { path, data } = await this.provider.downloadMod(mod);
+        const destination = join(this.downloadSettings.outputDirectory, path);
 
-            const fileStream = await openWritableFileStream(destination);
-            await finished(data.pipe(fileStream));
+        const fileStream = await openWritableFileStream(destination);
+        await finished(data.pipe(fileStream));
 
-            this.logger.debug(`Successfully downloaded mod: ${name} to ${path}`);
-        } catch (err) {
-            if (err instanceof NoDownloadException) {
-                this.logger.warn(err);
-            } else if (!(err instanceof InvalidApiKeyException)) {
-                console.error(`\n${err}`);
-                this.logger.error(`Failed to download mod ${name}, ${err}`);
-            }
-
-            throw err;
-        }
+        this.logger.debug(`Successfully downloaded mod: ${name} to ${path}`);
     }
 }
 

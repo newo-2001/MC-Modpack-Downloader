@@ -53,7 +53,7 @@ export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifie
     }
 
     public async getManifest(manifestFile: string = "manifest.json"): Promise<ModpackManifest<CurseForgeModIdentifier>> {
-        this.logger.info(`Reading manifest file: ${manifestFile}`);
+        this.logger.debug(`Reading manifest file: ${manifestFile}`);
         return await readJsonFile<ModpackManifest<CurseForgeModIdentifier>>(manifestFile);
     }
 

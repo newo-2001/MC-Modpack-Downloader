@@ -1,5 +1,8 @@
 {
-    "logLevel": "debug",
+    "logging": {
+        "logLevel": "debug",
+        "logFile": "latest.log"
+    },
     "downloads": {
         "concurrency": 20,
         "outputDirectory": "mods"

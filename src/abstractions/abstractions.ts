@@ -3,7 +3,8 @@ export const ABSTRACTIONS = {
         Providers: {
             CurseForge: Symbol()
         },
-        Downloads: Symbol()
+        Downloads: Symbol(),
+        Logging: Symbol()
     },
     Services: {
         ModProvider: Symbol(),

@@ -7,8 +7,9 @@ import { ModpacksChModProvider } from "./mod-providers/modpacks.ch/modpacks.ch-m
 import { LocalModProvider } from "./mod-providers/local/local-mod-provider.js";
 import { Settings, loadSettings } from "./settings.js";
 import { exit } from "process";
-import { Logger, createLogger, format, transports } from "winston";
+import { Logger } from "winston";
 import { isDirectoryEmpty } from "./utils.js";
+import { createLogger } from "./logging.js";
 import chalk from "chalk";
 import confirm from "@inquirer/confirm";
 
@@ -35,23 +36,17 @@ registerDependencies(provider, container);
 const logger = container.get(Logger);
 
 {
-    let version = process.env.npm_package_version;
-    console.log(`MC-Modpack-Downloader ${version}`);
+    const version = process.env.npm_package_version;
     logger.info(`MC-Modpack-Downloader ${version}`);
-
-    console.log(`Using ${provider} mod provider`);
     logger.info(`Using ${provider} provider`);
 
-    logger.info(`Using concurrency: ${settings.downloads.concurrency}`);
-    logger.info(`Log level set to ${settings.logLevel}`);
+    logger.debug(`Using concurrency: ${settings.downloads.concurrency}`);
+    logger.debug(`Log level set to ${settings.logging.logLevel}`);
 }
 
 if (!await isDirectoryEmpty(settings.downloads.outputDirectory)) {
-    logger.warn("Output directory is not empty");
-
-    const message = chalk.yellow("Warning: The output directory is not empty, want to continue anyway?");
     const response = await confirm({
-        message,
+        message: chalk.yellow("Warning: The output directory is not empty, want to continue anyway?"),
         default: false,
         theme: {
             prefix: '⚠️',
@@ -72,16 +67,27 @@ if (!await isDirectoryEmpty(settings.downloads.outputDirectory)) {
     try {
         await orchestrator.downloadAllFromModpackId(modpackId);
     } catch (err) {
-        console.error(err);
+        if (err instanceof Error) {
+            logger.error(err.message);
+            logger.debug(err.stack);
+        } else {
+            logger.error("Something went wrong, no error information provided")
+        }
+
+        process.exitCode = 1;
     }
 }
 
 function createDIContainer(): Container {
     const container = new Container();
 
-    container.bind(Logger).toConstantValue(configureLogger());
     container.bind(ABSTRACTIONS.Settings.Downloads).toConstantValue(settings.downloads);
+    container.bind(ABSTRACTIONS.Settings.Logging).toConstantValue(settings.logging);
     container.bind(ABSTRACTIONS.Settings.Providers.CurseForge).toConstantValue(settings.curseforge);
+
+    const logger = createLogger(container.get(ABSTRACTIONS.Settings.Logging));
+    container.bind(Logger).toConstantValue(logger);
+
     container.bind(ABSTRACTIONS.Services.CurseForgeModProvider).to(CurseForgeModProvider).inTransientScope();
     
     return container;
@@ -107,21 +113,4 @@ type ModProvider = "curseforge" | "modpacks.ch" | "local";
 
 function isValidModProvider(provider: string): provider is ModProvider {
     return provider in PROVIDERS;
-}
-
-function configureLogger(): Logger {
-    const logFormat = format.printf(({ message, level, timestamp }) => {
-        return `${timestamp} [${level}] ${message}`;
-    })
-
-    return createLogger({
-        level: settings.logLevel ?? "debug",
-        format: format.combine(format.timestamp(), logFormat),
-        transports: [
-            new transports.File({
-                filename: "latest.log",
-                options: { flags: 'w' }
-            })
-        ]
-    })
 }
