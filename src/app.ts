@@ -24,8 +24,6 @@ if (!isValidModProvider(provider)) {
     exit(1);
 }
 
-console.log(`Using ${provider} mod provider`);
-
 settings = await loadSettings();
 
 const container = createDIContainer();
@@ -35,9 +33,17 @@ const orchestrator = container.resolve(DownloadOrchestrator);
 const modpackId = container.get(ABSTRACTIONS.ModpackId);
 const logger = container.get(Logger);
 
-logger.info(`Using ${provider} provider`);
-logger.info(`Using concurrency: ${settings.downloads.concurrency}`);
-logger.info(`Log level set to ${settings.logLevel}`);
+{
+    let version = process.env.npm_package_version;
+    console.log(`MC-Modpack-Downloader ${version}`);
+    logger.info(`MC-Modpack-Downloader ${version}`);
+
+    console.log(`Using ${provider} mod provider`);
+    logger.info(`Using ${provider} provider`);
+
+    logger.info(`Using concurrency: ${settings.downloads.concurrency}`);
+    logger.info(`Log level set to ${settings.logLevel}`);
+}
 
 try {
     await orchestrator.downloadAllFromModpackId(modpackId);
