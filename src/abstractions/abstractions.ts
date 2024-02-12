@@ -1,14 +1,16 @@
 export const ABSTRACTIONS = {
     Settings: {
         Providers: {
-            CurseForge: Symbol()
+            CurseForge: Symbol("Settings.CurseForge"),
+            ModpacksCh: Symbol("Settings.ModpacksCh")
         },
-        Downloads: Symbol(),
-        Logging: Symbol()
+        Downloads: Symbol("Settings.Downloads"),
+        Logging: Symbol("Settings.Logging"),
+        All: Symbol("Settings.All")
     },
     Services: {
-        ModProvider: Symbol(),
-        CurseForgeModProvider: Symbol()
+        ModProvider: Symbol("Services.ModProvider"),
+        CurseForgeModProvider: Symbol("Services.CurseForgeModProvider")
     },
-    ModpackId: Symbol()
+    ModpackId: Symbol("ModpackId")
 };

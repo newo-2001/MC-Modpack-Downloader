@@ -7,8 +7,17 @@ Because all the launchers break every other week and I can't be bothered to swit
 ### Problem?
 If you run into any issues whilst trying to use the script or just don't understand what you're doing, feel free to open an issue, I'm happy to help.
 
-# How to use
+# Contents
+- [How to use](#how-to-use)
+    - [Prerequisites](#prerequisites)
+    - [Initial setup](#initial-setup)
+    - [Running the script](#running-the-script)
+    - [Using the files](#using-the-downloaded-files)
+- [Customization](#customization)
+- [Automation](#automation)
+- [Deprecations](#deprecations)
 
+# How to use
 ## Prerequisites
 - [Node.js](https://nodejs.org/en)
 
@@ -37,13 +46,11 @@ If you've used the script before, make sure to clean out the output directory fi
 If you are downloading from CurseForge:
 1. Download the archive for your modpack of choice from the [CurseForge website](https://www.curseforge.com/minecraft/search?class=modpacks).
 2. Place the `manifest.json` file contained in the archive in the root directory of the project.
-3. Open a terminal in the root directory and run the command `npm run curseforge`.
-4. Your newly downloaded mods should be located in the output directory (default: `mods`).
 
 If you are downloading from modpacks.ch:
 1. Open `settings.json` and change the values in the `modpacks.ch -> modpack` field to the corresponding values found on the page for the modpack in question on the [feed-the-beast website](https://www.feed-the-beast.com/). For more information see the [settings](#settings) section.
-2. Open a terminal in the root directory and run the command `npm run modpacks.ch`.
-3. Your newly downloaded modpack should be located in the output directory (default: `mods`).
+
+Now regardless of the provider open a terminal in the root directory, run the command `npm start`, and follow the interactive prompt.
 
 The script might come back saying some mods did not have a download url, this happens because mod authors can choose to disable API downloads on CurseForge to better monetize their work. If you get these messages, you will have to manually download these from somewhere (probably the [CurseForge website](https://www.curseforge.com/minecraft/).) When manually downloading, make sure the version number matches.
 
@@ -60,11 +67,15 @@ The downloaded files can be used with virtually any launcher that allows for cre
 6. - If you downloaded the files from CurseForge you want to create a new directory called `mods` and drag the files downloaded by the script in here. You will also want to drag the rest of the files that came with the `.zip` besides `manifest.json` into this directory *next to the mods folder*.
    - If you downloaded with modpacks.ch you want to drag all the files downloaded by the script into this directory directly.
 
-## Settings
+# Customization
 The `settings.json` file provides several options to customize your experience.
-- **LogLevel** - Determines how much information gets logged to `latest.log`, valid values are `debug`, `info`, `warn`, and `error`. (default: `debug`)
-- **Concurrency** - This defines the amount of downloads that will happen at the same time. (default: `20`)
-    > :warning: Changing this to a high value has the risk of downloads timing out due to exhausting system resources.
+- **Logging**
+    - **LogFile** - The name of the file to log debug information to (default `latest.log`).
+    - **LogLevel** - Determines how much information gets logged to the log file, valid values are `debug`, `info`, `warn`, and `error`. (default: `debug`)
+- **Downloads**
+    - **Concurrency** - This defines the amount of downloads that will happen at the same time. (default: `20`)
+
+        > :warning: Changing this to a high value has the risk of downloads timing out due to exhausting system resources.
 
 - **Output Directory** is the directory in which the downloaded files will be placed. The output directory is relative to this directory. (default: `mods`)
 - **Curseforge** This section contains settings for the CurseForge mod provider, these **might** be used by other providers.
@@ -76,3 +87,17 @@ The `settings.json` file provides several options to customize your experience.
     - **Modpack** - This block uniquely identifies the modpack you are trying to download. These values can be found on the [ftb website](https://www.feed-the-beast.com/) on the page of the respective modpack. It should look something like the image below.
 
         ![](docs/images/ftb_pack_id.png)
+
+# Automation
+In case you are writing an automated script this information might be of interest to you.
+
+You can use one of the following commands to skip the provider selection prompt:
+- `npm start curseforge` for CurseForge
+- `npm start modpacks.ch` for modpacks.ch
+
+# Deprecations
+The following features are considered deprecated and might be removed in a future version.
+
+| deprecated feature | alternative | deprecated since |
+| --- | --- | --- |
+| The npm scripts `npm run curseforge` and `npm run modpacks.ch` | Use the alternatives `npm start curseforge` and `npm start modpacks.ch` | v1.1.0 |

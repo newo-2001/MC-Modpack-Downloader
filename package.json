@@ -4,6 +4,7 @@
   "description": "Download minecraft modpacks without the need for the FTB app or Overwolf.",
   "type": "module",
   "scripts": {
+    "start": "node --no-warnings --loader ts-node/esm src/app.ts",
     "curseforge": "node --no-warnings --loader ts-node/esm src/app.ts curseforge",
     "modpacks.ch": "node --no-warnings --loader ts-node/esm src/app.ts modpacks.ch",
     "local": "node --no-warnings --loader ts-node/esm src/app.ts local"
@@ -17,6 +18,7 @@
   },
   "dependencies": {
     "@inquirer/confirm": "^3.0.0",
+    "@inquirer/select": "^2.0.0",
     "chalk": "^5.3.0",
     "cli-progress": "^3.12.0",
     "default-composer": "^0.6.0",

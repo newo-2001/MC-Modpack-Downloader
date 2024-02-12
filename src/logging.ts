@@ -1,8 +1,10 @@
 import { Logger, format, transports, level } from "winston";
 import winston from "winston";
 import { LoggingSettings } from "./settings.js";
+import { Container } from "inversify";
+import { ABSTRACTIONS } from "./abstractions/abstractions.js";
 
-export function createLogger(settings: LoggingSettings): Logger {
+function createLogger(settings: LoggingSettings): Logger {
     return winston.createLogger({
         transports: [
             new transports.File({
@@ -30,4 +32,9 @@ export function createLogger(settings: LoggingSettings): Logger {
             })
         ]
     })
+}
+
+export function registerLogger(container: Container) {
+    const logger = createLogger(container.get(ABSTRACTIONS.Settings.Logging));
+    container.bind(Logger).toConstantValue(logger);
 }
