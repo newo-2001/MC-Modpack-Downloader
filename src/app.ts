@@ -8,6 +8,9 @@ import { LocalModProvider } from "./mod-providers/local/local-mod-provider.js";
 import { Settings, loadSettings } from "./settings.js";
 import { exit } from "process";
 import { Logger, createLogger, format, transports } from "winston";
+import { isDirectoryEmpty } from "./utils.js";
+import chalk from "chalk";
+import confirm from "@inquirer/confirm";
 
 let settings: Settings;
 
@@ -29,8 +32,6 @@ settings = await loadSettings();
 const container = createDIContainer();
 registerDependencies(provider, container);
 
-const orchestrator = container.resolve(DownloadOrchestrator);
-const modpackId = container.get(ABSTRACTIONS.ModpackId);
 const logger = container.get(Logger);
 
 {
@@ -45,10 +46,34 @@ const logger = container.get(Logger);
     logger.info(`Log level set to ${settings.logLevel}`);
 }
 
-try {
-    await orchestrator.downloadAllFromModpackId(modpackId);
-} catch (err) {
-    console.error(err);
+if (!await isDirectoryEmpty(settings.downloads.outputDirectory)) {
+    logger.warn("Output directory is not empty");
+
+    const message = chalk.yellow("Warning: The output directory is not empty, want to continue anyway?");
+    const response = await confirm({
+        message,
+        default: false,
+        theme: {
+            prefix: '⚠️',
+        }
+    });
+
+    if (response) {
+        logger.info("Continuing with non-empty output directory")
+    } else {
+        exit(0);
+    }
+}
+
+{
+    const orchestrator = container.resolve(DownloadOrchestrator);
+    const modpackId = container.get(ABSTRACTIONS.ModpackId);
+
+    try {
+        await orchestrator.downloadAllFromModpackId(modpackId);
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 function createDIContainer(): Container {
