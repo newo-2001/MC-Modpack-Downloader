@@ -27,16 +27,18 @@ This project has been tested for Node 19.7.0. If you are experiencing any issues
 If this is your first time running the script you have to perform some additional setup:
 1. Open a terminal in this folder and run the command `npm install`.
 
-    > [!IMPORTANT] This step has to be repeated after pulling a new version of the script.
+> [!IMPORTANT]
+> The above step has to be repeated after pulling a new version of the script.
 2. Copy the file `settings.example.json` and rename it to `settings.json`.
 3. Acquire an API key from [the CurseForge website](https://console.curseforge.com/?#/api-keys) after logging in.
 
-    > [!IMPORTANT]
-    > This step is still required, even if you don't intend on downloading from CurseForge. Other providers (modpacks.ch) might delegate the download to CurseForge behind the scenes.
+> [!IMPORTANT]
+> The above step is still required, even if you don't intend on downloading from CurseForge. Other providers (modpacks.ch) might delegate the download to CurseForge behind the scenes.
 
-    > [!NOTE]
-    > It might take several minutes for CurseForge to start accepting the API key after initial acquisition.
 4. Replace the `API_KEY_HERE` under the curseforge section with your api key in the `settings.json` file.
+
+> [!NOTE]
+> It might take several minutes for CurseForge to start accepting the API key after initial acquisition.
 
 ## Running the script
 Before downloading a modpack, you need to figure out where you are downloading it from. Currently CurseForge and modpacks.ch (FTB) are supported. If you are sourcing your modpacks from a different provider, please let me know by opening a [GitHub issue](https://github.com/newo-2001/MC-Modpack-Downloader/issues), I will try to add support for it.
@@ -75,21 +77,25 @@ The downloaded files can be used with virtually any launcher that allows for cre
 
 # Customization
 The `settings.json` file provides several options to customize your experience.
-- **Logging**
-    - **LogFile** - The name of the file to log debug information to (default `latest.log`).
-    - **LogLevel** - Determines how much information gets logged to the log file, valid values are `debug`, `info`, `warn`, and `error`. (default: `debug`)
-- **Downloads**
-    - **Concurrency** - This defines the amount of downloads that will happen at the same time. (default: `20`)
 
-        > [!WARNING]
-        > Changing this to a high value has the risk of downloads timing out due to exhausting system resources.
+#### Logging
+**LogFile** - The name of the file to log debug information to (default `latest.log`).
+**LogLevel** - Determines how much information gets logged to the log file, valid values are `debug`, `info`, `warn`, and `error`. (default: `debug`)
 
-- **Output Directory** is the directory in which the downloaded files will be placed. The output directory is relative to this directory. (default: `mods`)
-- **Curseforge** This section contains settings for the CurseForge mod provider, these **might** be used by other providers.
-    - **Api Key** - CurseForge requires users of their api to provide an api key. You can get yours for free on [their website](https://console.curseforge.com/?#/api-keys) after logging in.
+#### Downloads
+**Concurrency** - This defines the amount of downloads that will happen at the same time. (default: `20`)
 
-        > [!WARNING]
-        > This key is sensative information, you shouldn't post it online.
+> [!WARNING]
+> Changing the concurrency to a high value has the risk of downloads timing out due to exhausting system resources.
+
+**Output Directory** - The directory in which the downloaded files will be placed. The output directory is relative to this directory. (default: `mods`)
+
+#### Curseforge
+This section contains settings for the CurseForge mod provider, these **might** be used by other providers.
+**Api Key** - CurseForge requires users of their api to provide an api key. You can get yours for free on [their website](https://console.curseforge.com/?#/api-keys) after logging in.
+
+> [!CAUTION]
+> Your API key is sensative information, you shouldn't post it online.
 
 # Automation
 In case you are writing an automated script this information might be of interest to you.
