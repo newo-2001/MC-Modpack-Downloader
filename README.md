@@ -78,11 +78,11 @@ The downloaded files can be used with virtually any launcher that allows for cre
 # Customization
 The `settings.json` file provides several options to customize your experience.
 
-#### Logging
+### Logging
 **LogFile** - The name of the file to log debug information to (default `latest.log`).
 **LogLevel** - Determines how much information gets logged to the log file, valid values are `debug`, `info`, `warn`, and `error`. (default: `debug`)
 
-#### Downloads
+### Downloads
 **Concurrency** - This defines the amount of downloads that will happen at the same time. (default: `20`)
 
 > [!WARNING]
@@ -90,7 +90,7 @@ The `settings.json` file provides several options to customize your experience.
 
 **Output Directory** - The directory in which the downloaded files will be placed. The output directory is relative to this directory. (default: `mods`)
 
-#### Curseforge
+### Curseforge
 This section contains settings for the CurseForge mod provider, these **might** be used by other providers.
 **Api Key** - CurseForge requires users of their api to provide an api key. You can get yours for free on [their website](https://console.curseforge.com/?#/api-keys) after logging in.
 
