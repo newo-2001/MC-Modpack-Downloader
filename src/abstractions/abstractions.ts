@@ -10,7 +10,7 @@ export const ABSTRACTIONS = {
     },
     Services: {
         ModProvider: Symbol("Services.ModProvider"),
-        CurseForgeModProvider: Symbol("Services.CurseForgeModProvider")
-    },
-    ModpackId: Symbol("ModpackId")
+        CurseForgeModProvider: Symbol("Services.CurseForgeModProvider"),
+        ModpackIdResolver: Symbol("Services.ModpackIdResolver")
+    }
 };

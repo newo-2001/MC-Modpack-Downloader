@@ -20,7 +20,8 @@ export interface ModpacksChCurseForgeFile {
 }
 
 export interface ModpacksChModProviderSettings {
-    modpack: ModpacksChModpackIdentifier
+    /** @deprecated Use interactive prompt instead */
+    modpack?: ModpacksChModpackIdentifier
 }
 
 export interface ModpacksChModpackVersionManifest {

@@ -24,3 +24,6 @@ export class InvalidApiKeyException extends Error {
         this.name = "InvalidApiKeyException";
     }
 }
+
+// Exit the program but don't display a stack trace as we know the problem
+export class FatalError extends Error {}

@@ -5,9 +5,20 @@ import { ModpacksChModManifest, ModpacksChModpackIdentifier, ModpacksChModpackMa
 import { join } from "path";
 import { ABSTRACTIONS } from "../../abstractions/abstractions.js";
 import { CurseForgeModIdentifier } from "../curseforge/curseforge-types.js";
-import { NoDownloadException } from "../../exceptions.js";
+import { FatalError, NoDownloadException } from "../../exceptions.js";
 import { Logger } from "winston";
 import * as path from "path";
+
+type ModpacksChSuccessResponse<T extends {}> = T & {
+    status: "success"
+}
+
+interface ModpacksChErrorResponse {
+    status: "error",
+    message: string
+}
+
+type ModpacksChResponse<T> = ModpacksChSuccessResponse<T> | ModpacksChErrorResponse
 
 @injectable()
 export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest, ModpacksChModpackIdentifier> {
@@ -59,10 +70,21 @@ export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest,
     public getModpackVersionManifest(modpack: ModpacksChModpackIdentifier): Promise<ModpacksChModpackVersionManifest> {
         const url = `/modpack/${modpack.id}/${modpack.version}`;
         this.logger.debug(`Downloading modpack version manifest for modpack with id: ${modpack.id}, version: ${modpack.version}`);
-        return this.httpClient.get<ModpackManifest<ModpacksChModManifest>>(url);
+        return this.httpGet<ModpacksChModpackVersionManifest>(url);
     }
 
     public getModName(modId: ModpacksChModManifest): string {
         return path.join(modId.path, modId.name);
+    }
+
+    // Having to deal with 200 OK, status: error (-_-;)
+    private async httpGet<T>(endpoint: string): Promise<T> {
+        const response = await this.httpClient.get<ModpacksChResponse<T>>(endpoint);
+
+        if (response.status == "error") {
+            throw new FatalError(response.message);
+        } else {
+            return response;
+        }
     }
 }

@@ -9,11 +9,5 @@
     },
     "curseforge": {
         "apiKey": "API_KEY_HERE"
-    },
-    "modpacks.ch": {
-        "modpack": {
-            "id": 99,
-            "version": 6475
-        }
     }
 }

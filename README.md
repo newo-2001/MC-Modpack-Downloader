@@ -26,19 +26,23 @@ This project has been tested for Node 19.7.0. If you are experiencing any issues
 ## Initial setup
 If this is your first time running the script you have to perform some additional setup:
 1. Open a terminal in this folder and run the command `npm install`.
-    > :information_source: This step has to be repeated after pulling a new version of the script.
+
+    > [!IMPORTANT] This step has to be repeated after pulling a new version of the script.
 2. Copy the file `settings.example.json` and rename it to `settings.json`.
 3. Acquire an API key from [the CurseForge website](https://console.curseforge.com/?#/api-keys) after logging in.
-    > :information_source: This step is still required, even if you don't intend on downloading from CurseForge. Other providers (modpacks.ch) might delegate the download to CurseForge behind the scenes.
 
-    > :information_source: It might take several minutes for CurseForge to start accepting the API key after initial acquisition.
+    > [!IMPORTANT]
+    > This step is still required, even if you don't intend on downloading from CurseForge. Other providers (modpacks.ch) might delegate the download to CurseForge behind the scenes.
+
+    > [!NOTE]
+    > It might take several minutes for CurseForge to start accepting the API key after initial acquisition.
 4. Replace the `API_KEY_HERE` under the curseforge section with your api key in the `settings.json` file.
 
 ## Running the script
 Before downloading a modpack, you need to figure out where you are downloading it from. Currently CurseForge and modpacks.ch (FTB) are supported. If you are sourcing your modpacks from a different provider, please let me know by opening a [GitHub issue](https://github.com/newo-2001/MC-Modpack-Downloader/issues), I will try to add support for it.
 
 There are slight differences between the two:
-- CurseForge uses a manifest file to identify a modpack, whereas modpacks.ch uses an id specified in the config.
+- CurseForge uses a manifest file to identify a modpack, whereas modpacks.ch uses a pack id and version number
 - For CurseForge this script only downloads the `.jar` files for the mods, as the other files are provided in the archive containing the `manifest.json` file, whereas for modpacks.ch, all of the files for the modpack are downloaded by the script.
 
 If you've used the script before, make sure to clean out the output directory first. Specific instructions for your provider of choice follow below.
@@ -48,7 +52,9 @@ If you are downloading from CurseForge:
 2. Place the `manifest.json` file contained in the archive in the root directory of the project.
 
 If you are downloading from modpacks.ch:
-1. Open `settings.json` and change the values in the `modpacks.ch -> modpack` field to the corresponding values found on the page for the modpack in question on the [feed-the-beast website](https://www.feed-the-beast.com/). For more information see the [settings](#settings) section.
+1. Locate the modpack id and version number on the [feed-the-beast website](https://www.feed-the-beast.com/). It looks like the image below:
+
+    ![](docs/images/ftb_pack_id.png)
 
 Now regardless of the provider open a terminal in the root directory, run the command `npm start`, and follow the interactive prompt.
 
@@ -75,18 +81,15 @@ The `settings.json` file provides several options to customize your experience.
 - **Downloads**
     - **Concurrency** - This defines the amount of downloads that will happen at the same time. (default: `20`)
 
-        > :warning: Changing this to a high value has the risk of downloads timing out due to exhausting system resources.
+        > [!WARNING]
+        > Changing this to a high value has the risk of downloads timing out due to exhausting system resources.
 
 - **Output Directory** is the directory in which the downloaded files will be placed. The output directory is relative to this directory. (default: `mods`)
 - **Curseforge** This section contains settings for the CurseForge mod provider, these **might** be used by other providers.
     - **Api Key** - CurseForge requires users of their api to provide an api key. You can get yours for free on [their website](https://console.curseforge.com/?#/api-keys) after logging in.
-    
-        > :warning: This key is sensative information, you shouldn't post it online.
 
-- **Modpacks.ch** This section contains settings for the Modpacks.ch mod provider, these **won't** be used by other providers.
-    - **Modpack** - This block uniquely identifies the modpack you are trying to download. These values can be found on the [ftb website](https://www.feed-the-beast.com/) on the page of the respective modpack. It should look something like the image below.
-
-        ![](docs/images/ftb_pack_id.png)
+        > [!WARNING]
+        > This key is sensative information, you shouldn't post it online.
 
 # Automation
 In case you are writing an automated script this information might be of interest to you.
@@ -101,3 +104,4 @@ The following features are considered deprecated and might be removed in a futur
 | deprecated feature | alternative | deprecated since |
 | --- | --- | --- |
 | The npm scripts `npm run curseforge` and `npm run modpacks.ch` | Use the alternatives `npm start curseforge` and `npm start modpacks.ch` | v1.1.0 |
+| The `modpacks.ch -> modpack` settings block in `settings.json` | Use the interactive prompt instead | v1.1.1 |

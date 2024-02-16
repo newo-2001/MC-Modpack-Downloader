@@ -30,7 +30,8 @@ const defaults = {
     downloads: {
         concurrency: 20,
         outputDirectory: "mods",
-    }
+    },
+    ["modpacks.ch"]: {}
 };
 
 async function loadSettings(file: string = "settings.json"): Promise<Settings> {
