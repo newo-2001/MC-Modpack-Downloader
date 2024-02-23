@@ -6,7 +6,8 @@ import { readJsonFile } from "../../utils.js";
 import {
     CurseForgeModIdentifier,
     CurseForgeModMetadata,
-    CurseForgeModProviderSettings, 
+    CurseForgeModProviderSettings,
+    CurseForgeProjectMetadata, 
 } from "./curseforge-types.js";
 import { HttpException, InvalidApiKeyException, NoDownloadException } from "../../exceptions.js";
 import { Logger } from "winston";
@@ -25,16 +26,18 @@ export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifie
 
     public async downloadMod(mod: CurseForgeModIdentifier): Promise<FileDownload> {
         try {
-            const { downloadUrl, isAvailable, fileName } = await this.getModMetadata(mod);
+            let { downloadUrl, fileName } = await this.getModMetadata(mod);
 
-            // For some reason some downloadUrl's are null even though the api says they are available
-            if (!isAvailable || !downloadUrl) {
-                throw new NoDownloadException(fileName);
+            if (!downloadUrl) {
+                const project = await this.getProjectMetadata(mod.projectID);
+                const url = `https://www.curseforge.com/minecraft/mc-mods/${project.slug}/${mod.fileID}`;
+                throw new NoDownloadException(fileName, url);
             }
 
             return {
                 path: fileName,
-                data: await this.httpClient.download(downloadUrl)
+                // This probably doesn't require the API key
+                download: () => this.httpClient.download(downloadUrl)
             }
         } catch (err) {
             if (err instanceof HttpException && err.statusCode == 403) {
@@ -43,6 +46,13 @@ export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifie
 
             throw err;
         }
+    }
+
+    private async getProjectMetadata(projectId: number): Promise<CurseForgeProjectMetadata> {
+        const url = `/mods/${projectId}`;
+
+        this.logger.debug(`Downloading metadata for CurseForge project: ${projectId}`);
+        return (await this.httpClient.get<{ data: CurseForgeProjectMetadata }>(url)).data;
     }
 
     public async getModMetadata(mod: CurseForgeModIdentifier): Promise<CurseForgeModMetadata> {

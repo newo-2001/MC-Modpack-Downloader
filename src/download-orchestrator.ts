@@ -5,12 +5,13 @@ import { dirname, join } from "path";
 import { finished } from "stream/promises";
 import { ConcurrentTask, ConcurrentTaskProgress } from "./concurrent-task.js";
 import { Presets, SingleBar } from "cli-progress";
-import { WriteStream, createWriteStream } from "fs";
+import { WriteStream, createWriteStream, existsSync } from "fs";
 import { mkdir } from "fs/promises";
 import { DownloadSettings } from "./settings.js";
 import { InvalidApiKeyException, NoDownloadException } from "./exceptions.js";
 import { Logger } from "winston";
 import { exit } from "process";
+import terminalLink from "terminal-link";
 
 @injectable()
 export class DownloadOrchestrator<TPackId, TModId> {
@@ -45,6 +46,7 @@ export class DownloadOrchestrator<TPackId, TModId> {
 
             // Clear current line because we are printing a progress bar
             process.stdout.clearLine(0);
+            process.stdout.cursorTo(0);
 
             if (err instanceof Error) {
                 this.logger.error(err.message);
@@ -71,22 +73,36 @@ export class DownloadOrchestrator<TPackId, TModId> {
 
         this.logger.info(`Successfully downloaded ${succeeded.length}/${fileAmount} files`);
 
-        if (failedNoDownload.length > 0) {
-            const files = failedNoDownload.map(x => x.file).join(",\n\t")
+        if (failedNoDownload.length == 1) {
+            const file = failedNoDownload[0];
+            this.logger.info(`The following file can't be downloaded through the API, please download it manually: ${file.url ? terminalLink(file.fileName, file.url) : file.fileName}`);
+        } else if (failedNoDownload.length > 0) {
+            const files = failedNoDownload
+                .map(x => x.url ? terminalLink(x.fileName, x.url) : x.fileName)
+                .join(",\n\t");
+
             this.logger.info(`The following ${failedNoDownload.length} files can't be downloaded through the API, please download them manually:\n\t${files}`);
         }
 
         if (failedFatal.length > 0) {
-            this.logger.error(`Modpack is incomplete, ${failedFatal.length} downloads failed unexpectedly`);
+            const plural = failedFatal.length != 1 ? 's' : "";
+            this.logger.error(`Modpack is incomplete, ${failedFatal.length} download${plural} failed unexpectedly`);
         }
     }
 
     private async downloadMod(mod: TModId): Promise<void> {
         const name = this.provider.getModName(mod);
 
-        const { path, data } = await this.provider.downloadMod(mod);
+        const { path, download } = await this.provider.downloadMod(mod);
         const destination = join(this.downloadSettings.outputDirectory, path);
 
+        // Should probably check if hash matches to avoid partial downloads persisting
+        if (existsSync(destination)) {
+            this.logger.debug(`Skipping download, file already exists: ${path}`)
+            return;
+        }
+
+        const data = await download();
         const fileStream = await openWritableFileStream(destination);
         await finished(data.pipe(fileStream));
 

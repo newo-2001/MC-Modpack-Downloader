@@ -5,4 +5,5 @@ manifest.json
 settings.json
 .vscode
 dist
+packs
 *.log

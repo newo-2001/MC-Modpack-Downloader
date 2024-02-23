@@ -14,7 +14,7 @@ export class HttpClient {
 
         const response = await fetch(url, { headers: this.headers })
         if (response.status < 200 || response.status >= 300) {
-            throw new HttpException(response.status);
+            throw new HttpException(url, response.status);
         }
 
         const responseText = await response.text();
@@ -31,7 +31,7 @@ export class HttpClient {
         const response = await fetch(url, { headers: this.headers });
 
         if (response.status < 200 || response.status >= 300) {
-            throw new HttpException(response.status);
+            throw new HttpException(url, response.status);
         }
 
         const blob = await response.blob();

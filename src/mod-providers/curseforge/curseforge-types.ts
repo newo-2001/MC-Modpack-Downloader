@@ -3,12 +3,22 @@ export interface CurseForgeModProviderSettings {
 }
 
 export interface CurseForgeModIdentifier {
-    projectID: string,
-    fileID: string
+    projectID: number,
+    fileID: number
 }
 
 export interface CurseForgeModMetadata {
     isAvailable: boolean,
     downloadUrl?: string,
     fileName: string
+}
+
+export interface CurseForgeProjectMetadata {
+    name: string,
+    id: number,
+    slug: string,
+    isAvailable: boolean,
+    links: {
+        websiteUrl: string
+    }
 }

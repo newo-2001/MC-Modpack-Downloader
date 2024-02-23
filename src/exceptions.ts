@@ -1,20 +1,24 @@
 export class NoDownloadException extends Error {
-    public readonly file: string;
+    public readonly fileName: string;
+    public readonly url?: string;
 
-    constructor(fileName: string) {
+    constructor(fileName: string, url?: string) {
         super(`No download was provided for file: ${fileName}, please attempt to download this file manually.`);
         this.name = "NoDownloadException";
-        this.file = fileName;
+        this.fileName = fileName;
+        this.url = url;
     }
 }
 
 export class HttpException extends Error {
     public readonly statusCode: number;
+    public readonly url: string;
 
-    constructor(code: number) {
-        super(`Http call failed with status code: ${code}`);
+    constructor(url: string, code: number) {
+        super(`Http call to ${url} failed with status code ${code}`);
         this.name = "HttpException";
         this.statusCode = code;
+        this.url = url;
     }
 }
 

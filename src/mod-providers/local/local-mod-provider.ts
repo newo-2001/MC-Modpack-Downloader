@@ -15,7 +15,7 @@ export class LocalModProvider implements ModProvider<LocalModIdentifer, string> 
 
         return {
             path: modId.path,
-            data: fd.createReadStream()
+            download: () => Promise.resolve(fd.createReadStream())
         };
     }
 

@@ -2,7 +2,7 @@ import { Readable } from "stream"
 
 export interface FileDownload {
     path: string,
-    data: Readable
+    download: () => Promise<Readable>
 }
 
 export interface ModpackManifest<TModId> {

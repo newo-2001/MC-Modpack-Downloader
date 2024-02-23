@@ -38,17 +38,17 @@ export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest,
         if (mod.url) {
             return {
                 path,
-                data: await this.httpClient.download(mod.url)
+                download: () => this.httpClient.download(mod.url)
             }
         } else if (mod.curseforge) {
             const { file, project } = mod.curseforge;
-            const modId: CurseForgeModIdentifier = { fileID: "" + file, projectID: "" + project };
+            const modId: CurseForgeModIdentifier = { fileID: file, projectID: project };
 
             this.logger.debug(`Delegating download for file: ${path} to CurseForge`);
 
             return {
                 path,
-                data: (await this.curseforge.downloadMod(modId)).data
+                download: (await this.curseforge.downloadMod(modId)).download
             }
         }
 
