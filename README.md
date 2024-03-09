@@ -92,6 +92,7 @@ The `settings.json` file provides several options to customize your experience.
 
 ### Curseforge
 This section contains settings for the CurseForge mod provider, these **might** be used by other providers.
+
 **Api Key** - CurseForge requires users of their api to provide an api key. You can get yours for free on [their website](https://console.curseforge.com/?#/api-keys) after logging in.
 
 > [!CAUTION]
