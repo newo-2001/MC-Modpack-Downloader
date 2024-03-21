@@ -111,4 +111,4 @@ The following features are considered deprecated and might be removed in a futur
 | deprecated feature | alternative | deprecated since |
 | --- | --- | --- |
 | The npm scripts `npm run curseforge` and `npm run modpacks.ch` | Use the alternatives `npm start curseforge` and `npm start modpacks.ch` | v1.1.0 |
-| The `modpacks.ch -> modpack` settings block in `settings.json` | Use the interactive prompt instead | v1.1.1 |
+| The `modpacks.ch -> modpack` settings block in `settings.json` | Use the interactive prompt instead | v1.2.0 |

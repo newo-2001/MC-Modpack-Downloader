@@ -26,7 +26,7 @@ export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifie
 
     public async downloadMod(mod: CurseForgeModIdentifier): Promise<FileDownload> {
         try {
-            let { downloadUrl, fileName } = await this.getModMetadata(mod);
+            const { downloadUrl, fileName } = await this.getModMetadata(mod);
 
             if (!downloadUrl) {
                 const project = await this.getProjectMetadata(mod.projectID);
