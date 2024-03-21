@@ -30,8 +30,7 @@ export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifie
 
             if (!downloadUrl) {
                 const project = await this.getProjectMetadata(mod.projectID);
-                const url = `https://www.curseforge.com/minecraft/mc-mods/${project.slug}/${mod.fileID}`;
-                throw new NoDownloadException(fileName, url);
+                throw new NoDownloadException(fileName, project.links.websiteUrl);
             }
 
             return {
