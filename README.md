@@ -30,7 +30,10 @@ If this is your first time running the script you have to perform some additiona
 > [!IMPORTANT]
 > The above step has to be repeated after pulling a new version of the script.
 2. Copy the file `settings.example.json` and rename it to `settings.json`.
-3. Acquire an API key from [the CurseForge website](https://console.curseforge.com/?#/api-keys) after logging in.
+3. Acquire an API key from [the CurseForge for Studios website](https://console.curseforge.com/?#/api-keys) after logging in.
+
+> [!IMPORTANT]
+> The API key you need is **not** one of the "API tokens" you can generate from your profile on the main CurseForge website; you need to use the link above to go to CurseForge for Studios and copy the key there into your settings.
 
 > [!IMPORTANT]
 > The above step is still required, even if you don't intend on downloading from CurseForge. Other providers (modpacks.ch) might delegate the download to CurseForge behind the scenes.
