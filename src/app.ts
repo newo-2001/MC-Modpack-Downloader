@@ -10,16 +10,10 @@ import { exit } from "process";
 import { Logger } from "winston";
 import { isDirectoryEmpty } from "./utils.js";
 import { registerLogger } from "./logging.js";
-import { inquireModProvider, warnNonEmptyOutputDirectory } from "./interactive.js";
-import { ModpacksChModpackIdResolver } from "./mod-providers/modpacks.ch/modpacks.ch-modpack-id-resolver.js";
+import { inputNumber, inquireModProvider, warnNonEmptyOutputDirectory } from "./interactive.js";
 import { ModpacksChModpackIdentifier } from "./mod-providers/modpacks.ch/modpacks.ch-types.js";
 import { FatalError } from "./exceptions.js";
-
-const PROVIDERS = {
-    "curseforge": CurseForgeModProvider,
-    "modpacks.ch": ModpacksChModProvider,
-    "local": LocalModProvider
-};
+import { run, subcommands, command, option, number, optional } from "cmd-ts";
 
 const container = new Container();
 await registerSettings(container);
@@ -40,26 +34,53 @@ if (!await isDirectoryEmpty(settings.downloads.outputDirectory)) {
     }
 }
 
-{
-    const provider = process.argv[2] ?? await inquireModProvider();
+// TODO: fix inquireModProvider
+run(subcommands({
+    name: "mod provider",
+    cmds: {
+        curseforge: command({
+            name: "curseforge",
+            args: {},
+            handler: async () => {
+                container.bind(ABSTRACTIONS.Services.ModProvider).to(CurseForgeModProvider).inTransientScope();
+                await downloadModpack<string>("manifest.json");
+            },
+        }),
+        "modpacks.ch": command({
+            name: "modpacks.ch",
+            args: {
+                modpackId: option({
+                    long: "modpack-id",
+                    type: optional(number),
+                    defaultValue: () => settings["modpacks.ch"].modpack?.id
+                }),
+                modpackVersion: option({
+                    long: "modpack-version",
+                    type: optional(number),
+                    defaultValue: () => settings["modpacks.ch"].modpack?.version
+                }),
+            },
+            handler: async ({ modpackId, modpackVersion }) => {
+                modpackId ??= await inputNumber("Enter the modpack id: ");
+                modpackVersion ??= await inputNumber("Enter the modpack version: ");
 
-    if (!(provider in PROVIDERS)) {
-        const providerNames = Object.keys(PROVIDERS).join(", ");
-        console.error(`Invalid mod provider: '${provider}', it has to be one of: ${providerNames}`);
-        exit(1);
+                container.bind(ABSTRACTIONS.Services.ModProvider).to(ModpacksChModProvider).inTransientScope();
+                await downloadModpack<ModpacksChModpackIdentifier>({ id: modpackId, version: modpackVersion });
+            }
+        }),
+        local: command({
+            name: "local",
+            args: {},
+            handler: async ({}) => {
+                container.bind(ABSTRACTIONS.Services.ModProvider).to(LocalModProvider).inTransientScope();
+                await downloadModpack<string>("local");
+            }
+        })
     }
+}), process.argv.slice(2));
 
-    logger.info(`Using ${provider} provider`);
-
-    container.bind(ABSTRACTIONS.Services.CurseForgeModProvider).to(CurseForgeModProvider).inTransientScope();
-    container.bind(ABSTRACTIONS.Services.ModProvider).to(PROVIDERS[provider]).inTransientScope();
-
-    await download(provider);
-}
-
-async function download(provider: string) {
+async function downloadModpack<TPackId>(modpackId: TPackId): Promise<void> {
     const orchestrator = container.resolve(DownloadOrchestrator);
-    const modpackId = await resolveModpackId(provider);
 
     try {
         await orchestrator.downloadAllFromModpackId(modpackId);
@@ -73,16 +94,5 @@ async function download(provider: string) {
         }
 
         exit(1);
-    }
-}
-
-async function resolveModpackId(provider: string): Promise<ModpacksChModpackIdentifier | string> {
-    switch (provider) {
-        case "modpacks.ch":
-            return await container.resolve(ModpacksChModpackIdResolver).resolve();
-        case "curseforge":
-            return "manifest.json"
-        case "local":
-            return "debug"
     }
 }

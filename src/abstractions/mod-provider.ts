@@ -12,6 +12,7 @@ export interface ModpackManifest<TModId> {
 
 export interface ModProvider<TModId, TPackId> {
     downloadMod(modId: TModId): Promise<FileDownload>,
-    getManifest(modpackId: TPackId): Promise<ModpackManifest<TModId>>
-    getModName(modId: TModId): string
+    getManifest(modpackId: TPackId): Promise<ModpackManifest<TModId>>,
+    getModName(modId: TModId): string,
+    getName(): string
 }

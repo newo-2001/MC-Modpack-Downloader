@@ -32,6 +32,10 @@ export class LocalModProvider implements ModProvider<LocalModIdentifer, string> 
     public getModName(modId: LocalModIdentifer): string {
         return modId.path;
     }
+
+    public getName(): string {
+        return "local";
+    }
 }
 
 function getFilesRecursive(dir: string): string[] {

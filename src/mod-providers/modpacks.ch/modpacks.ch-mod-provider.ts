@@ -77,6 +77,10 @@ export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest,
         return path.join(modId.path, modId.name);
     }
 
+    public getName(): string {
+        return "modpacks.ch";
+    }
+
     // Having to deal with 200 OK, status: error (-_-;)
     private async httpGet<T>(endpoint: string): Promise<T> {
         const response = await this.httpClient.get<ModpacksChResponse<T>>(endpoint);

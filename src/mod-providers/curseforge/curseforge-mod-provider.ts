@@ -69,4 +69,8 @@ export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifie
     public getModName(modId: CurseForgeModIdentifier): string {
         return `(fileId: ${modId.fileID}, projectId: ${modId.projectID})`;
     }
+    
+    public getName(): string {
+        return "CurseForge";
+    }
 }
