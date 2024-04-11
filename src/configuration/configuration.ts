@@ -14,7 +14,8 @@ export interface Configuration {
     logging: LoggingConfiguration
     downloads: DownloadConfiguration
     curseforge: CurseForgeModProviderConfiguration,
-    "modpacks.ch": ModpacksChModProviderConfiguration
+    "modpacks.ch": ModpacksChModProviderConfiguration,
+    confirmAll: boolean
 }
 
 export interface DownloadConfiguration {

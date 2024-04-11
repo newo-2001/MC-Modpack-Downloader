@@ -45,6 +45,7 @@ const logger = container.get(Logger);
 
 {
     logger.info(`MC-Modpack-Downloader ${process.env.npm_package_version}`);
+    logger.debug(`Invoked with arguments: ${process.argv.slice(2).join(" ")}`);
 
     let redactedConfig = _.cloneDeep(config);
     delete redactedConfig.curseforge.apiKey;
@@ -53,8 +54,10 @@ const logger = container.get(Logger);
 }
 
 if (!await isDirectoryEmpty(config.downloads.outputDirectory)) {
-    if (await warnNonEmptyOutputDirectory()) {
-        logger.info("Continuing with non-empty output directory")
+    if (config.confirmAll) {
+        logger.warn("Output directory is not empty");
+    } else if (await warnNonEmptyOutputDirectory()) {
+        logger.info("Continuing with non-empty output directory");
     } else {
         exit(0);
     }

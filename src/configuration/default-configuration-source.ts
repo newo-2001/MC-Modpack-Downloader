@@ -10,6 +10,7 @@ export async function getDefaultConfiguration(): Promise<PartialConfiguration> {
             concurrency: 20,
             outputDirectory: "mods",
         },
-        ["modpacks.ch"]: {}
+        ["modpacks.ch"]: {},
+        confirmAll: false
     })
 }

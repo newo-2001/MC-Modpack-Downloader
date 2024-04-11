@@ -129,7 +129,8 @@ You can use an additional positional argument for the provider to skip the provi
 - `npm start modpacks.ch` for modpacks.ch
 
 Additionally the following optional options can be specified:
-- `--help` - Show the usage guide (only these options)
+- `--help` or `-h` - Show the usage guide (only these options)
+- `--yes` or `-y` - Automatically confirm all confirmation prompts
 - `--modpack-id <number>` - The id for the modpack (only when using modpacks.ch provider)
 - `--modpack-version <number>` - The version number of the modpack (only when using modpacks.ch provider)
 
@@ -137,9 +138,9 @@ Additionally the following optional options can be specified:
 > If you are using any of the options start with '-' or '--', an additional '--' following 'npm start' is required to indicate the start of the arguments to the actual script, this can be seen in the examples below.
 
 ### Examples
-Download the modpack with id 1 and version 2 from modpacks.ch:
+Download the modpack with id 1 and version 2 from modpacks.ch and automatically confirm all confirmation prompts:
 ```
-npm start -- modpacks.ch --modpack-id 1 --modpack-version 2
+npm start -- modpacks.ch --modpack-id 1 --modpack-version 2 --yes
 ```
 
 # Deprecations

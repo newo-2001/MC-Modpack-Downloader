@@ -6,6 +6,7 @@ import { ModProviderName } from "../mod-providers/mod-provider.js";
 interface Arguments {
     "modpack-id"?: number,
     "modpack-version"?: number,
+    "yes"?: boolean,
     "help"?: boolean
 }
 
@@ -29,7 +30,8 @@ function getArguments(): string[] {
 
 export function getArgumentConfiguration(provider: ModProviderName): Promise<PartialConfiguration> {
     let argumentConfig: Partial<ArgumentConfig<Arguments>> = {
-        help: { type: Boolean, optional: true, alias: 'h', description: "Prints this usage guide" }
+        help: { type: Boolean, optional: true, alias: 'h', description: "Prints this usage guide" },
+        yes: { type: Boolean, optional: true, alias: 'y', description: "Automatically answer all confirmation prompts with 'yes'"}
     };
 
     if (provider == "modpacks.ch") {
@@ -50,7 +52,8 @@ export function getArgumentConfiguration(provider: ModProviderName): Promise<Par
 
     const bindings = {
         "modpack-id": { "modpacks.ch": { modpack: { id: args["modpack-id"] } } },
-        "modpack-version": { "modpacks.ch": { modpack: { version: args["modpack-version"] } } }
+        "modpack-version": { "modpacks.ch": { modpack: { version: args["modpack-version"] } } },
+        "yes": { confirmAll: args["yes"] }
     };
 
     let config: PartialConfiguration = {};
