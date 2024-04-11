@@ -1,6 +1,6 @@
 import { PathLike } from "fs";
 
-export interface LocalModProviderSettings {
+export interface LocalModProviderConfiguration {
     source: PathLike
 }
 

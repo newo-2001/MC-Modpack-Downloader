@@ -1,6 +1,6 @@
 {
   "name": "mcmodpackdownloader",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "description": "Download minecraft modpacks without the need for the FTB app or Overwolf.",
   "type": "module",
   "scripts": {
@@ -13,6 +13,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/cli-progress": "^3.11.0",
+    "@types/lodash-es": "^4.17.12",
     "@types/node": "^20.3.1",
     "ts-node": "^10.9.1"
   },
@@ -22,12 +23,12 @@
     "@inquirer/select": "^2.0.0",
     "chalk": "^5.3.0",
     "cli-progress": "^3.12.0",
-    "cmd-ts": "^0.13.0",
-    "default-composer": "^0.6.0",
     "inversify": "^6.0.1",
+    "lodash-es": "^4.17.21",
     "node-fetch": "^3.3.1",
     "reflect-metadata": "^0.1.13",
     "terminal-link": "^3.0.0",
+    "ts-command-line-args": "^2.5.1",
     "winston": "^3.11.0"
   },
   "overrides": {

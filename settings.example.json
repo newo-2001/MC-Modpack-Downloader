@@ -1,12 +1,4 @@
 {
-    "logging": {
-        "logLevel": "debug",
-        "logFile": "latest.log"
-    },
-    "downloads": {
-        "concurrency": 20,
-        "outputDirectory": "mods"
-    },
     "curseforge": {
         "apiKey": "API_KEY_HERE"
     }

@@ -1,6 +1,5 @@
 import { PathLike } from "fs";
 import { FileHandle, readFile, readdir } from "fs/promises";
-import input from "@inquirer/input";
 
 export async function readJsonFile<T>(path: PathLike | FileHandle): Promise<T> {
     try {
@@ -21,13 +20,6 @@ export async function isDirectoryEmpty(path: PathLike): Promise<boolean> {
     }
 }
 
-export type Nullable<T> = T | null
-
-export async function resolvePipeline<T>(resolvers: (() => Promise<Nullable<T>>)[]): Promise<Nullable<T>> {
-    for (const resolver of resolvers) {
-        const result = await resolver();
-        if (result) return result;
-    }
-
-    return null;
+export type DeepPartial<T> = {
+    [P in keyof T]?: DeepPartial<T[P]>;
 }

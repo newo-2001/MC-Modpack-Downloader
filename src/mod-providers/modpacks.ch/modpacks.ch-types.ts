@@ -19,9 +19,8 @@ export interface ModpacksChCurseForgeFile {
     file: number
 }
 
-export interface ModpacksChModProviderSettings {
-    /** @deprecated Use interactive prompt instead */
-    modpack?: ModpacksChModpackIdentifier
+export interface ModpacksChModProviderConfiguration {
+    modpack: ModpacksChModpackIdentifier
 }
 
 export interface ModpacksChModpackVersionManifest {

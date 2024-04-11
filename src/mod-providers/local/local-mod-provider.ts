@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
-import { FileDownload, ModProvider, ModpackManifest } from "../../abstractions/mod-provider.js";
 import { basename, join, relative } from "path";
 import { readdirSync } from "fs";
 import { LocalModIdentifer } from "./local-types.js";
 import { open } from "fs/promises";
+import { FileDownload, ModProvider, ModpackManifest } from "../mod-provider.js";
 
 // Mod provider that sources from local filesystem
 // Can be used for testing without putting unnecessary load on external API's

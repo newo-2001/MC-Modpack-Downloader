@@ -1,13 +1,13 @@
 import { inject, injectable } from "inversify";
-import { FileDownload, ModProvider, ModpackManifest } from "../../abstractions/mod-provider.js";
 import { HttpClient } from "../../http-client.js";
 import { ModpacksChModManifest, ModpacksChModpackIdentifier, ModpacksChModpackManifest, ModpacksChModpackVersionManifest } from "./modpacks.ch-types.js";
 import { join } from "path";
-import { ABSTRACTIONS } from "../../abstractions/abstractions.js";
 import { CurseForgeModIdentifier } from "../curseforge/curseforge-types.js";
 import { FatalError, NoDownloadException } from "../../exceptions.js";
 import { Logger } from "winston";
 import * as path from "path";
+import { FileDownload, ModProvider, ModpackManifest } from "../mod-provider.js";
+import { ABSTRACTIONS } from "../../abstractions.js";
 
 type ModpacksChSuccessResponse<T extends {}> = T & {
     status: "success"

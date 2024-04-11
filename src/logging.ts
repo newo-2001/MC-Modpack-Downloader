@@ -1,15 +1,15 @@
-import { Logger, format, transports, level } from "winston";
+import { Logger, format, transports } from "winston";
 import winston from "winston";
-import { LoggingSettings } from "./settings.js";
 import { Container } from "inversify";
-import { ABSTRACTIONS } from "./abstractions/abstractions.js";
+import { ABSTRACTIONS } from "./abstractions.js";
+import { LoggingConfiguration } from "./configuration/configuration.js";
 
-function createLogger(settings: LoggingSettings): Logger {
+function createLogger(config: LoggingConfiguration): Logger {
     return winston.createLogger({
         transports: [
             new transports.File({
-                filename: settings.logFile,
-                level: settings.logLevel,
+                filename: config.logFile,
+                level: config.logLevel,
                 options: { flags: 'w' },
                 format: format.combine(
                     format.timestamp(),
@@ -35,6 +35,6 @@ function createLogger(settings: LoggingSettings): Logger {
 }
 
 export function registerLogger(container: Container) {
-    const logger = createLogger(container.get(ABSTRACTIONS.Settings.Logging));
+    const logger = createLogger(container.get(ABSTRACTIONS.Configuration.Logging));
     container.bind(Logger).toConstantValue(logger);
 }

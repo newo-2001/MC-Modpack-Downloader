@@ -1,11 +1,12 @@
-# What is this?
+# MC Modpack Downloader
+### What is this?
 This is a script to pull minecraft mods from a set of API's given a manifest file.
 
 ### Why?
 Because all the launchers break every other week and I can't be bothered to switch so I wrote my own script.
 
 ### Problem?
-If you run into any issues whilst trying to use the script or just don't understand what you're doing, feel free to open an issue, I'm happy to help.
+If you run into any issues whilst trying to use the script or just don't understand what you're doing, feel free to open an issue (or PR); I'm happy to help.
 
 # Contents
 - [How to use](#how-to-use)
@@ -13,8 +14,9 @@ If you run into any issues whilst trying to use the script or just don't underst
     - [Initial setup](#initial-setup)
     - [Running the script](#running-the-script)
     - [Using the files](#using-the-downloaded-files)
-- [Customization](#customization)
-- [Automation](#automation)
+- [Configuration](#configuration)
+    - [settings.json](#settings.json)
+    - [Arguments](#arguments)
 - [Deprecations](#deprecations)
 
 # How to use
@@ -78,35 +80,67 @@ The downloaded files can be used with virtually any launcher that allows for cre
 6. - If you downloaded the files from CurseForge you want to create a new directory called `mods` and drag the files downloaded by the script in here. You will also want to drag the rest of the files that came with the `.zip` besides `manifest.json` into this directory *next to the mods folder*.
    - If you downloaded with modpacks.ch you want to drag all the files downloaded by the script into this directory directly.
 
-# Customization
-The `settings.json` file provides several options to customize your experience.
+# Configuration
+The script combines configuration options from several sources with decreasing precedence:
+1. Command line arguments
+2. `settings.json`
+3. The default values as seen below
+4. Interactive prompts for certain required options without defaults
 
-### Logging
-**LogFile** - The name of the file to log debug information to (default `latest.log`).
-**LogLevel** - Determines how much information gets logged to the log file, valid values are `debug`, `info`, `warn`, and `error`. (default: `debug`)
+## settings.json
+
+The `settings.json` file provides several options to customize your experience. Values from the default configuration below will be used for keys that are not overriden in your `settings.json` file.
+```json
+{
+    "logging": {
+        "logLevel": "debug",
+        "logFile": "latest.log"
+    },
+    "downloads": {
+        "concurrency": 20,
+        "outputDirectory": "mods"
+    },
+    "curseforge": {
+        "apiKey": // no default
+    }
+}
+```
+
+### Logging 
+- `logFile` - The name of the file to log debug information to.
+- `logLevel` - Determines how much information gets logged to the log file, valid values are `debug`, `info`, `warn`, and `error`.
 
 ### Downloads
-**Concurrency** - This defines the amount of downloads that will happen at the same time. (default: `20`)
+- `downloads.outputDirectory` - The directory in which the downloaded files will be placed. The output directory is relative to this directory.
+- `downloads.concurrency` - This defines the amount of downloads that will happen at the same time.
 
 > [!WARNING]
 > Changing the concurrency to a high value has the risk of downloads timing out due to exhausting system resources.
 
-**Output Directory** - The directory in which the downloaded files will be placed. The output directory is relative to this directory. (default: `mods`)
-
-### Curseforge
-This section contains settings for the CurseForge mod provider, these **might** be used by other providers.
-
-**Api Key** - CurseForge requires users of their api to provide an api key. You can get yours for free on [their website](https://console.curseforge.com/?#/api-keys) after logging in.
+### CurseForge
+- `apiKey` - CurseForge requires users of their api to provide an api key. You can get yours for free on [their website](https://console.curseforge.com/?#/api-keys) after logging in.
 
 > [!CAUTION]
 > Your API key is sensative information, you shouldn't post it online.
 
-# Automation
-In case you are writing an automated script this information might be of interest to you.
-
-You can use one of the following commands to skip the provider selection prompt:
+## Arguments
+You can use an additional positional argument for the provider to skip the provider selection prompt:
 - `npm start curseforge` for CurseForge
 - `npm start modpacks.ch` for modpacks.ch
+
+Additionally the following optional options can be specified:
+- `--help` - Show the usage guide (only these options)
+- `--modpack-id <number>` - The id for the modpack (only when using modpacks.ch provider)
+- `--modpack-version <number>` - The version number of the modpack (only when using modpacks.ch provider)
+
+> [!NOTE]
+> If you are using any of the options start with '-' or '--', an additional '--' following 'npm start' is required to indicate the start of the arguments to the actual script, this can be seen in the examples below.
+
+### Examples
+Download the modpack with id 1 and version 2 from modpacks.ch:
+```
+npm start -- modpacks.ch --modpack-id 1 --modpack-version 2
+```
 
 # Deprecations
 The following features are considered deprecated and might be removed in a future version.
@@ -114,4 +148,4 @@ The following features are considered deprecated and might be removed in a futur
 | deprecated feature | alternative | deprecated since |
 | --- | --- | --- |
 | The npm scripts `npm run curseforge` and `npm run modpacks.ch` | Use the alternatives `npm start curseforge` and `npm start modpacks.ch` | v1.1.0 |
-| The `modpacks.ch -> modpack` settings block in `settings.json` | Use the interactive prompt instead | v1.2.0 |
+| The `modpacks.ch -> modpack` settings block in `settings.json` | Use the interactive prompt or command line arguments instead | v1.2.0 |

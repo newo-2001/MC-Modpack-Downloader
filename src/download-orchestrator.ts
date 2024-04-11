@@ -1,23 +1,23 @@
 import { inject, injectable } from "inversify";
-import { ABSTRACTIONS } from "./abstractions/abstractions.js";
-import { ModProvider, ModpackManifest } from "./abstractions/mod-provider.js";
 import { dirname, join } from "path";
 import { finished } from "stream/promises";
 import { ConcurrentTask, ConcurrentTaskProgress } from "./concurrent-task.js";
 import { Presets, SingleBar } from "cli-progress";
 import { WriteStream, createWriteStream, existsSync } from "fs";
 import { mkdir } from "fs/promises";
-import { DownloadSettings } from "./settings.js";
 import { InvalidApiKeyException, NoDownloadException } from "./exceptions.js";
 import { Logger } from "winston";
 import { exit } from "process";
 import terminalLink from "terminal-link";
+import { ModProvider, ModpackManifest } from "./mod-providers/mod-provider.js";
+import { ABSTRACTIONS } from "./abstractions.js";
+import { DownloadConfiguration } from "./configuration/configuration.js";
 
 @injectable()
 export class DownloadOrchestrator<TPackId, TModId> {
     constructor(
         @inject(ABSTRACTIONS.Services.ModProvider) private readonly provider: ModProvider<TModId, TPackId>,
-        @inject(ABSTRACTIONS.Settings.Downloads) private readonly downloadSettings: DownloadSettings,
+        @inject(ABSTRACTIONS.Configuration.Downloads) private readonly downloadConfig: DownloadConfiguration,
         @inject(Logger) private readonly logger: Logger
     ) { }
 
@@ -34,7 +34,7 @@ export class DownloadOrchestrator<TPackId, TModId> {
         const fileAmount = manifest.files.length;
 
         const downloadTasks = manifest.files.map(mod => () => this.downloadMod(mod));
-        const task = new ConcurrentTask(downloadTasks, { concurrency: this.downloadSettings.concurrency});
+        const task = new ConcurrentTask(downloadTasks, { concurrency: this.downloadConfig.concurrency});
 
         const progressBar = new SingleBar({}, Presets.shades_classic);
         progressBar.start(downloadTasks.length, 0);
@@ -96,7 +96,7 @@ export class DownloadOrchestrator<TPackId, TModId> {
         const name = this.provider.getModName(mod);
 
         const { path, download } = await this.provider.downloadMod(mod);
-        const destination = join(this.downloadSettings.outputDirectory, path);
+        const destination = join(this.downloadConfig.outputDirectory, path);
 
         // Should probably check if hash matches to avoid partial downloads persisting
         if (existsSync(destination)) {

@@ -1,4 +1,4 @@
-export interface CurseForgeModProviderSettings {
+export interface CurseForgeModProviderConfiguration {
     apiKey: string
 }
 

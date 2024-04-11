@@ -2,6 +2,7 @@ import chalk from "chalk";
 import select from "@inquirer/select";
 import confirm from "@inquirer/confirm";
 import input from "@inquirer/input";
+import { ModProviderName } from "./mod-providers/mod-provider.js";
 
 export function warnNonEmptyOutputDirectory(): Promise<boolean> {
     return confirm({
@@ -13,25 +14,25 @@ export function warnNonEmptyOutputDirectory(): Promise<boolean> {
     });
 }
 
-export function inquireModProvider(): Promise<string> {
+export function inquireModProvider(): Promise<ModProviderName> {
     return select({
         message: chalk.blue("What mod provider do you want to use?"),
         choices: [
             {
                 name: "CurseForge",
-                value: "curseforge"
+                value: "curseforge" as ModProviderName
             },
             {
                 name: "modpacks.ch (FTB)",
-                value: "modpacks.ch"
+                value: "modpacks.ch" as ModProviderName
             }
         ]
     })
 }
 
 export async function inputNumber(message: string): Promise<number> {
-    return +await input({
+    return parseInt(await input({
         message,
         validate: (input: string) => !isNaN(+input),
-    });
+    }), 10);
 }

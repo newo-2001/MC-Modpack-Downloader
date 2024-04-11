@@ -1,5 +1,7 @@
 import { Readable } from "stream"
 
+export type ModProviderName = "curseforge" | "modpacks.ch" | "local";
+
 export interface FileDownload {
     path: string,
     download: () => Promise<Readable>

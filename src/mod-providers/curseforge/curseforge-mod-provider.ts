@@ -1,26 +1,26 @@
-import { FileDownload, ModProvider, ModpackManifest } from "../../abstractions/mod-provider.js";
 import { HttpClient } from "../../http-client.js";
 import { inject, injectable } from "inversify";
-import { ABSTRACTIONS } from "../../abstractions/abstractions.js";
 import { readJsonFile } from "../../utils.js";
 import {
     CurseForgeModIdentifier,
     CurseForgeModMetadata,
-    CurseForgeModProviderSettings,
+    CurseForgeModProviderConfiguration,
     CurseForgeProjectMetadata, 
 } from "./curseforge-types.js";
 import { HttpException, InvalidApiKeyException, NoDownloadException } from "../../exceptions.js";
 import { Logger } from "winston";
+import { FileDownload, ModProvider, ModpackManifest } from "../mod-provider.js";
+import { ABSTRACTIONS } from "../../abstractions.js";
 
 @injectable()
 export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifier, string> {
     private readonly httpClient: HttpClient;
     
     constructor(
-        @inject(ABSTRACTIONS.Settings.Providers.CurseForge) private readonly settings: CurseForgeModProviderSettings,
+        @inject(ABSTRACTIONS.Configuration.Providers.CurseForge) private readonly config: CurseForgeModProviderConfiguration,
         @inject(Logger) private readonly logger: Logger
     ) {
-        const headers = { "x-api-key": this.settings.apiKey };
+        const headers = { "x-api-key": this.config.apiKey };
         this.httpClient = new HttpClient("https://api.curseforge.com/v1", headers, this.logger);
     }
 
