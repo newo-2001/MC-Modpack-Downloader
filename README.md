@@ -69,6 +69,16 @@ The script might come back saying some mods did not have a download url, this ha
 
 Refer to [Using the downloaded files](#using-the-downloaded-files), to install the modpack.
 
+### Docker
+Alternatively, if you don't want to take a system dependency on Node.js, a Dockerfile is provided to help you run the script in a container.
+
+1. Make your output directory (default: mods)
+2. Build the docker image: `docker build -t mc-dl .`
+3. Run the docker image: `docker run -it -e curseforge_api_key=<API_KEY_HERE> -v ./mods:/app/mods mc-dl`
+
+> [!NOTE]
+> The docker image does not include your `settings.json` file as that could bake your API key into the docker image.
+
 ## Using the downloaded files
 The downloaded files can be used with virtually any launcher that allows for creating custom profiles. These instructions are written for MultiMC, but similar steps should apply to whatever launcher you are using.
 
@@ -111,8 +121,8 @@ The `settings.json` file provides several options to customize your experience. 
 - `logLevel` - Determines how much information gets logged to the log file, valid values are `debug`, `info`, `warn`, and `error`.
 
 ### Downloads
-- `downloads.outputDirectory` - The directory in which the downloaded files will be placed. The output directory is relative to this directory.
-- `downloads.concurrency` - This defines the amount of downloads that will happen at the same time.
+- `outputDirectory` - The directory in which the downloaded files will be placed. The output directory is relative to this directory.
+- `concurrency` - This defines the amount of downloads that will happen at the same time.
 
 > [!WARNING]
 > Changing the concurrency to a high value has the risk of downloads timing out due to exhausting system resources.

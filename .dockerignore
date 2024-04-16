@@ -1,0 +1,13 @@
+**/*.md
+**/*.log
+LICENSE
+.gitignore
+settings.example.json
+settings.json
+.vs/
+.vscode/
+.git/
+docs/
+node_modules/
+mods/
+debug/
