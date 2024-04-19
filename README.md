@@ -144,7 +144,7 @@ Additionally the following optional options can be specified:
 - `--modpack-id <number>` - The id for the modpack (only when using modpacks.ch provider)
 - `--modpack-version <number>` - The version number of the modpack (only when using modpacks.ch provider)
 - `--concurrency <number>` - The amount of downloads that will happen at the same time
-- `--output-directory <path>` - The directory to store the downloaded files in
+- `--output-directory <path>` or `-o <path>` - The directory to store the downloaded files in
 - `--log-file <path>` - The file to log to
 - `--log-level <level>` - The lowest level of importance to log. Valid values are: be `debug`, `info`, `warn`, and `error`
 

@@ -42,7 +42,7 @@ export function getArgumentConfiguration(provider: ModProviderName): PartialConf
         help: { type: Boolean, optional: true, alias: 'h', description: "Prints this usage guide" },
         yes: { type: Boolean, optional: true, alias: 'y', description: "Automatically answer all confirmation prompts with 'yes'" },
         concurrency: { type: int, optional: true, description: "The amount of downloads that will happen at the same time" },
-        "output-directory": { type: String, optional: true, description: "The folder to put the downloaded files into" },
+        "output-directory": { type: String, optional: true, alias: 'o', description: "The folder to put the downloaded files into" },
         "log-file": { type: String, optional: true, description: "The file to log to" },
         "log-level": { type: logLevel, optional: true, description: "The lowest level of importance to log. Valid values are: debug, info, warn, and error" }
     };
