@@ -1,6 +1,7 @@
 import { parse, ArgumentConfig } from "ts-command-line-args";
 import { PartialConfiguration } from "./configuration.js";
 import { ModProviderName } from "../mod-providers/mod-provider.js";
+import { LogLevel, logLevels } from "../logging.js";
 import * as _ from "lodash-es";
 
 interface Arguments {
@@ -8,6 +9,7 @@ interface Arguments {
     "modpack-version"?: number,
     "concurrency"?: number,
     "log-file": string,
+    "log-level": LogLevel
     "yes"?: boolean,
     "help"?: boolean
 }
@@ -17,6 +19,10 @@ function int(value?: string): number | undefined {
 
     const number = parseInt(value, 10);
     return typeof(number) == "number" && !isNaN(number) ? number : undefined;
+}
+
+function logLevel(value?: string): LogLevel | undefined {
+    return logLevels.find((level) => level == value)
 }
 
 function getArguments(): string[] {
@@ -35,7 +41,8 @@ export function getArgumentConfiguration(provider: ModProviderName): PartialConf
         help: { type: Boolean, optional: true, alias: 'h', description: "Prints this usage guide" },
         yes: { type: Boolean, optional: true, alias: 'y', description: "Automatically answer all confirmation prompts with 'yes'" },
         concurrency: { type: int, optional: true, description: "The amount of downloads that will happen at the same time" },
-        "log-file": { type: String, optional: true, description: "The file to log to" }
+        "log-file": { type: String, optional: true, description: "The file to log to" },
+        "log-level": { type: logLevel, optional: true, description: "The lowest level of importance to log. Valid values are: debug, info, warn, and error" }
     };
 
     if (provider == "modpacks.ch") {
@@ -59,7 +66,8 @@ export function getArgumentConfiguration(provider: ModProviderName): PartialConf
         "modpack-version": { "modpacks.ch": { modpack: { version: args["modpack-version"] } } },
         "yes": { confirmAll: args["yes"] },
         "concurrency": { downloads: { concurrency: args["concurrency"] } },
-        "log-file": { logging: { logFile: args["log-file"] } }
+        "log-file": { logging: { logFile: args["log-file"] } },
+        "log-level": { logging: { logLevel: args["log-level"] } }
     };
 
     let config: PartialConfiguration = {};

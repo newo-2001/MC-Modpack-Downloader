@@ -145,6 +145,7 @@ Additionally the following optional options can be specified:
 - `--modpack-version <number>` - The version number of the modpack (only when using modpacks.ch provider)
 - `--concurrency <number>` - The amount of downloads that will happen at the same time
 - `--log-file <path>` - The file to log to
+- `--log-level <level>` - The lowest level of importance to log. Valid values are: be `debug`, `info`, `warn`, and `error`
 
 > [!NOTE]
 > If you are using any of the options start with '-' or '--', an additional '--' following 'npm start' is required to indicate the start of the arguments to the actual script, this can be seen in the examples below.

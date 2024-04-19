@@ -10,6 +10,7 @@ import { ModProviderName } from "../mod-providers/mod-provider.js";
 import { inputNumber } from "../interactive.js";
 import { DeepPartial } from "../utils.js";
 import { getEnvironmentConfiguration } from "./environment-configuration-source.js";
+import { LoggingConfiguration } from "../logging.js";
 
 export interface Configuration {
     logging: LoggingConfiguration
@@ -22,11 +23,6 @@ export interface Configuration {
 export interface DownloadConfiguration {
     concurrency: number,
     outputDirectory: string
-}
-
-export interface LoggingConfiguration {
-    logLevel: string,
-    logFile: string
 }
 
 export type PartialConfiguration = DeepPartial<Configuration>;

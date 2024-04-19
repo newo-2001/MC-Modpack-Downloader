@@ -2,7 +2,6 @@ import { Logger, format, transports } from "winston";
 import winston from "winston";
 import { Container } from "inversify";
 import { ABSTRACTIONS } from "./abstractions.js";
-import { LoggingConfiguration } from "./configuration/configuration.js";
 
 function createLogger(config: LoggingConfiguration): Logger {
     return winston.createLogger({
@@ -37,4 +36,12 @@ function createLogger(config: LoggingConfiguration): Logger {
 export function registerLogger(container: Container) {
     const logger = createLogger(container.get(ABSTRACTIONS.Configuration.Logging));
     container.bind(Logger).toConstantValue(logger);
+}
+
+export const logLevels = ["debug", "info", "warn", "error"] as const;
+export type LogLevel = typeof logLevels[number];
+
+export interface LoggingConfiguration {
+    logLevel: LogLevel,
+    logFile: string
 }
