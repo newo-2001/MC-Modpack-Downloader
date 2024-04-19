@@ -7,6 +7,7 @@ interface Arguments {
     "modpack-id"?: number,
     "modpack-version"?: number,
     "concurrency"?: number,
+    "log-file": string,
     "yes"?: boolean,
     "help"?: boolean
 }
@@ -33,7 +34,8 @@ export function getArgumentConfiguration(provider: ModProviderName): PartialConf
     let argumentConfig: Partial<ArgumentConfig<Arguments>> = {
         help: { type: Boolean, optional: true, alias: 'h', description: "Prints this usage guide" },
         yes: { type: Boolean, optional: true, alias: 'y', description: "Automatically answer all confirmation prompts with 'yes'" },
-        concurrency: { type: int, optional: true, description: "The amount of downloads that will happen at the same time" }
+        concurrency: { type: int, optional: true, description: "The amount of downloads that will happen at the same time" },
+        "log-file": { type: String, optional: true, description: "The file to log to" }
     };
 
     if (provider == "modpacks.ch") {
@@ -56,7 +58,8 @@ export function getArgumentConfiguration(provider: ModProviderName): PartialConf
         "modpack-id": { "modpacks.ch": { modpack: { id: args["modpack-id"] } } },
         "modpack-version": { "modpacks.ch": { modpack: { version: args["modpack-version"] } } },
         "yes": { confirmAll: args["yes"] },
-        "concurrency": { downloads: { concurrency: args["concurrency"] } }
+        "concurrency": { downloads: { concurrency: args["concurrency"] } },
+        "log-file": { logging: { logFile: args["log-file"] } }
     };
 
     let config: PartialConfiguration = {};
