@@ -8,8 +8,9 @@ interface Arguments {
     "modpack-id"?: number,
     "modpack-version"?: number,
     "concurrency"?: number,
+    "output-directory"?: string,
     "log-file": string,
-    "log-level": LogLevel
+    "log-level": LogLevel,
     "yes"?: boolean,
     "help"?: boolean
 }
@@ -41,6 +42,7 @@ export function getArgumentConfiguration(provider: ModProviderName): PartialConf
         help: { type: Boolean, optional: true, alias: 'h', description: "Prints this usage guide" },
         yes: { type: Boolean, optional: true, alias: 'y', description: "Automatically answer all confirmation prompts with 'yes'" },
         concurrency: { type: int, optional: true, description: "The amount of downloads that will happen at the same time" },
+        "output-directory": { type: String, optional: true, description: "The folder to put the downloaded files into" },
         "log-file": { type: String, optional: true, description: "The file to log to" },
         "log-level": { type: logLevel, optional: true, description: "The lowest level of importance to log. Valid values are: debug, info, warn, and error" }
     };
@@ -66,6 +68,7 @@ export function getArgumentConfiguration(provider: ModProviderName): PartialConf
         "modpack-version": { "modpacks.ch": { modpack: { version: args["modpack-version"] } } },
         "yes": { confirmAll: args["yes"] },
         "concurrency": { downloads: { concurrency: args["concurrency"] } },
+        "output-directory": { downloads: { outputDirectory: args["output-directory"] } },
         "log-file": { logging: { logFile: args["log-file"] } },
         "log-level": { logging: { logLevel: args["log-level"] } }
     };
