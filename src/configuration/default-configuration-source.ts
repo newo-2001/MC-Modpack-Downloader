@@ -1,7 +1,7 @@
 import { PartialConfiguration } from "./configuration.js"
 
-export async function getDefaultConfiguration(): Promise<PartialConfiguration> {
-    return Promise.resolve({
+export function getDefaultConfiguration(): PartialConfiguration {
+    return {
         logging: {
             logFile: "latest.log",
             logLevel: "debug"
@@ -12,5 +12,5 @@ export async function getDefaultConfiguration(): Promise<PartialConfiguration> {
         },
         ["modpacks.ch"]: {},
         confirmAll: false
-    })
+    };
 }

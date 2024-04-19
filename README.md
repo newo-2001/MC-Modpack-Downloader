@@ -74,7 +74,7 @@ Alternatively, if you don't want to take a system dependency on Node.js, a Docke
 
 1. Make your output directory (default: mods)
 2. Build the docker image: `docker build -t mc-dl .`
-3. Run the docker image: `docker run -it -e curseforge_api_key=<API_KEY_HERE> -v ./mods:/app/mods mc-dl`
+3. Run the docker image: `docker run -it -e MCDL_CURSEFORGE_API_KEY=<API_KEY_HERE> -v ./mods:/app/mods mc-dl`
 
 > [!NOTE]
 > The docker image does not include your `settings.json` file as that could bake your API key into the docker image.
@@ -116,7 +116,7 @@ The `settings.json` file provides several options to customize your experience. 
 }
 ```
 
-### Logging 
+### Logging
 - `logFile` - The name of the file to log debug information to.
 - `logLevel` - Determines how much information gets logged to the log file, valid values are `debug`, `info`, `warn`, and `error`.
 
@@ -150,8 +150,11 @@ Additionally the following optional options can be specified:
 ### Examples
 Download the modpack with id 1 and version 2 from modpacks.ch and automatically confirm all confirmation prompts:
 ```
-npm start -- modpacks.ch --modpack-id 1 --modpack-version 2 --yes
+npm start -- modpacks.ch --modpack-id 1 --modpack-version 2 -y
 ```
+
+## Environment variables
+`MCDL_CURSEFORGE_API_KEY` - The CurseForge api key to use.
 
 # Deprecations
 The following features are considered deprecated and might be removed in a future version.
@@ -160,3 +163,4 @@ The following features are considered deprecated and might be removed in a futur
 | --- | --- | --- |
 | The npm scripts `npm run curseforge` and `npm run modpacks.ch` | Use the alternatives `npm start curseforge` and `npm start modpacks.ch` | v1.1.0 |
 | The `modpacks.ch -> modpack` settings block in `settings.json` | Use the interactive prompt or command line arguments instead | v1.2.0 |
+| The `curseforge_api_key` environment variable for `docker run`| Use the environment variable `MCDL_CURSEFORGE_API_KEY` instead | v2.1.0 |

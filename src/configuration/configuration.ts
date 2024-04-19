@@ -9,6 +9,7 @@ import { getArgumentConfiguration } from "./arguments-configuration-source.js";
 import { ModProviderName } from "../mod-providers/mod-provider.js";
 import { inputNumber } from "../interactive.js";
 import { DeepPartial } from "../utils.js";
+import { getEnvironmentConfiguration } from "./environment-configuration-source.js";
 
 export interface Configuration {
     logging: LoggingConfiguration
@@ -31,11 +32,12 @@ export interface LoggingConfiguration {
 export type PartialConfiguration = DeepPartial<Configuration>;
 
 export async function loadConfiguration(provider: ModProviderName): Promise<Configuration> {
-    let config: PartialConfiguration = _.defaultsDeep({}, ...await Promise.all([
+    let config: PartialConfiguration = _.defaultsDeep({}, ...[
         getArgumentConfiguration(provider),
-        getJsonConfiguration(),
+        getEnvironmentConfiguration(),
+        await getJsonConfiguration(),
         getDefaultConfiguration()
-    ]));
+    ]);
 
     if (provider == "modpacks.ch") {
         const modpack: Partial<ModpacksChModpackIdentifier> = config["modpacks.ch"]?.modpack ?? {};

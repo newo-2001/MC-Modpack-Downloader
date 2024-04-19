@@ -1,7 +1,7 @@
 import { parse, ArgumentConfig } from "ts-command-line-args";
 import { PartialConfiguration } from "./configuration.js";
-import * as _ from "lodash-es";
 import { ModProviderName } from "../mod-providers/mod-provider.js";
+import * as _ from "lodash-es";
 
 interface Arguments {
     "modpack-id"?: number,
@@ -28,7 +28,7 @@ function getArguments(): string[] {
     return argv;
 }
 
-export function getArgumentConfiguration(provider: ModProviderName): Promise<PartialConfiguration> {
+export function getArgumentConfiguration(provider: ModProviderName): PartialConfiguration {
     let argumentConfig: Partial<ArgumentConfig<Arguments>> = {
         help: { type: Boolean, optional: true, alias: 'h', description: "Prints this usage guide" },
         yes: { type: Boolean, optional: true, alias: 'y', description: "Automatically answer all confirmation prompts with 'yes'"}
@@ -63,5 +63,5 @@ export function getArgumentConfiguration(provider: ModProviderName): Promise<Par
         }
     }
 
-    return Promise.resolve(config);
+    return config
 }
