@@ -143,6 +143,7 @@ Additionally the following optional options can be specified:
 - `--yes` or `-y` - Automatically confirm all confirmation prompts
 - `--modpack-id <number>` - The id for the modpack (only when using modpacks.ch provider)
 - `--modpack-version <number>` - The version number of the modpack (only when using modpacks.ch provider)
+- `--concurrency <number>` - The amount of downloads that will happen at the same time
 
 > [!NOTE]
 > If you are using any of the options start with '-' or '--', an additional '--' following 'npm start' is required to indicate the start of the arguments to the actual script, this can be seen in the examples below.
