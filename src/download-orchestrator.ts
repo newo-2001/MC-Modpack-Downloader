@@ -77,10 +77,10 @@ export class DownloadOrchestrator<TPackId, TModId> {
 
         if (failedNoDownload.length == 1) {
             const file = failedNoDownload[0];
-            this.logger.info(`The following file can't be downloaded through the API, please download it manually:\n\t${file.url ? terminalLink(file.fileName, file.url) : file.fileName}`);
+            this.logger.info(`The following file can't be downloaded through the API, please download it manually:\n\t${file.url ? terminalLink(file.fileName, file.url, { fallback: () => `${file.fileName} ${file.url}`}) : file.fileName}`);
         } else if (failedNoDownload.length > 0) {
             const files = failedNoDownload
-                .map(x => x.url ? terminalLink(x.fileName, x.url) : x.fileName)
+                .map(x => x.url ? terminalLink(x.fileName, x.url, { fallback: () => `${x.fileName} ${x.url}`}) : x.fileName)
                 .join(",\n\t");
 
             this.logger.info(`The following ${failedNoDownload.length} files can't be downloaded through the API, please download them manually:\n\t${files}`);
