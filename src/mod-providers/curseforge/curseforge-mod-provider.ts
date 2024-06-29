@@ -30,7 +30,7 @@ export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifie
 
             if (!downloadUrl) {
                 const project = await this.getProjectMetadata(mod.projectID);
-                throw new NoDownloadException(fileName, project.links.websiteUrl);
+                throw new NoDownloadException(fileName, project.links.websiteUrl + "/files/" + mod.fileID);
             }
 
             return {
