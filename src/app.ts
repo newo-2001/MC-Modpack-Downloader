@@ -47,7 +47,7 @@ const logger = container.get(Logger);
     logger.info(`MC-Modpack-Downloader ${process.env.npm_package_version}`);
     logger.debug(`Invoked with arguments: ${process.argv.slice(2).join(" ")}`);
 
-    let redactedConfig = _.cloneDeep(config);
+    let redactedConfig = _.cloneDeep(config) as any;
     delete redactedConfig.curseforge.apiKey;
 
     logger.debug(`Using configuration: ${JSON.stringify(redactedConfig)}`);
