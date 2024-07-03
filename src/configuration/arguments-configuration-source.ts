@@ -7,6 +7,7 @@ import * as _ from "lodash-es";
 interface Arguments {
     "modpack-id"?: number,
     "modpack-version"?: number,
+    "manifest-file"?: string,
     "concurrency"?: number,
     "output-directory"?: string,
     "log-file": string,
@@ -54,6 +55,12 @@ export function getArgumentConfiguration(provider: ModProviderName): PartialConf
         })
     }
 
+    if (provider == "curseforge") {
+        _.defaults(argumentConfig, {
+            "manifest-file": { type: String, optional: true, description: "The location of the manifest.json file" },
+        })
+    }
+
     const args = parse<Arguments>(
         argumentConfig as ArgumentConfig<Arguments>,
         {
@@ -66,6 +73,7 @@ export function getArgumentConfiguration(provider: ModProviderName): PartialConf
     const bindings: { [Key in keyof Arguments]: PartialConfiguration } = {
         "modpack-id": { "modpacks.ch": { modpack: { id: args["modpack-id"] } } },
         "modpack-version": { "modpacks.ch": { modpack: { version: args["modpack-version"] } } },
+        "manifest-file": { "curseforge": { manifest: args["manifest-file"] } },
         "yes": { confirmAll: args["yes"] },
         "concurrency": { downloads: { concurrency: args["concurrency"] } },
         "output-directory": { downloads: { outputDirectory: args["output-directory"] } },

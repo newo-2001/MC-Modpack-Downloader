@@ -65,7 +65,7 @@ if (!await isDirectoryEmpty(config.downloads.outputDirectory)) {
 
 const modpackId = {
     "modpacks.ch": config["modpacks.ch"].modpack,
-    "curseforge": "manifest.json",
+    "curseforge": config["curseforge"].manifest,
     "local": "debug"
 }[provider];
 

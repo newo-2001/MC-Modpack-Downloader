@@ -43,6 +43,12 @@ export async function loadConfiguration(provider: ModProviderName): Promise<Conf
         config["modpacks.ch"].modpack = modpack as ModpacksChModpackIdentifier;
     }
 
+    if (provider == "curseforge") {
+      const curseforgeConfig: Partial<CurseForgeModProviderConfiguration> = config["curseforge"] ?? {};
+      curseforgeConfig.manifest ??= "manifest.json";
+      config["curseforge"] = curseforgeConfig as CurseForgeModProviderConfiguration;
+    }
+
     return config as Configuration;
 }
 
