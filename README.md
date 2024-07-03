@@ -111,7 +111,8 @@ The `settings.json` file provides several options to customize your experience. 
         "outputDirectory": "mods"
     },
     "curseforge": {
-        "apiKey": // no default
+        "apiKey": // no default,
+        "manifestFile": "manifest.json"
     }
 }
 ```
@@ -129,6 +130,7 @@ The `settings.json` file provides several options to customize your experience. 
 
 ### CurseForge
 - `apiKey` - CurseForge requires users of their api to provide an api key. You can get yours for free on [their website](https://console.curseforge.com/?#/api-keys) after logging in.
+- `manifestFile` - The manifest file path of the CurseForge modpack's manifest.
 
 > [!CAUTION]
 > Your API key is sensative information, you shouldn't post it online.
@@ -147,6 +149,7 @@ Additionally the following optional options can be specified:
 - `--output-directory <path>` or `-o <path>` - The directory to store the downloaded files in
 - `--log-file <path>` - The file to log to
 - `--log-level <level>` - The lowest level of importance to log. Valid values are: be `debug`, `info`, `warn`, and `error`
+- `--manifest-file` - The file path of the modpack's manifest (only when using curseforge provider)
 
 > [!NOTE]
 > If you are using any of the options start with '-' or '--', an additional '--' following 'npm start' is required to indicate the start of the arguments to the actual script, this can be seen in the examples below.
