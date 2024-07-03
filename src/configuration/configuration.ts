@@ -44,9 +44,9 @@ export async function loadConfiguration(provider: ModProviderName): Promise<Conf
     }
 
     if (provider == "curseforge") {
-      const curseforgeConfig: Partial<CurseForgeModProviderConfiguration> = config["curseforge"] ?? {};
-      curseforgeConfig.manifest ??= "manifest.json";
-      config["curseforge"] = curseforgeConfig as CurseForgeModProviderConfiguration;
+      const curseforgeConfig: Partial<CurseForgeModProviderConfiguration> = config.curseforge ?? {};
+      curseforgeConfig.manifestFile ??= "manifest.json";
+      config.curseforge = curseforgeConfig as CurseForgeModProviderConfiguration;
     }
 
     return config as Configuration;
