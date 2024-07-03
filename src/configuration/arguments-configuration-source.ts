@@ -73,7 +73,7 @@ export function getArgumentConfiguration(provider: ModProviderName): PartialConf
     const bindings: { [Key in keyof Arguments]: PartialConfiguration } = {
         "modpack-id": { "modpacks.ch": { modpack: { id: args["modpack-id"] } } },
         "modpack-version": { "modpacks.ch": { modpack: { version: args["modpack-version"] } } },
-        "manifest-file": { curseforge: { manifestFile: args["manifest-file"] } },
+        "manifest-file": { curseforge: { manifestFile: args["manifest-file"] ?? "manifest.json" } }, // Couldn't find a way to set default in a nicer way
         "yes": { confirmAll: args["yes"] },
         "concurrency": { downloads: { concurrency: args["concurrency"] } },
         "output-directory": { downloads: { outputDirectory: args["output-directory"] } },
