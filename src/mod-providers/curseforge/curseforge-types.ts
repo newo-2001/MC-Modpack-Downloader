@@ -1,5 +1,6 @@
 export interface CurseForgeModProviderConfiguration {
-    apiKey: string
+    apiKey: string,
+    manifestFile: string
 }
 
 export interface CurseForgeModIdentifier {

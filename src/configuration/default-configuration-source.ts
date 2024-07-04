@@ -11,6 +11,9 @@ export function getDefaultConfiguration(): PartialConfiguration {
             outputDirectory: "mods",
         },
         ["modpacks.ch"]: {},
+        curseforge: {
+            manifestFile: "manifest.json"
+        },
         confirmAll: false
     };
 }
