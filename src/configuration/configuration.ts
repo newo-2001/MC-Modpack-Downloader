@@ -18,7 +18,7 @@ export interface Configuration {
     curseforge: CurseForgeModProviderConfiguration,
     "modpacks.ch": ModpacksChModProviderConfiguration,
     confirmAll: boolean,
-    configFile: String
+    configFile: string
 }
 
 export interface DownloadConfiguration {
