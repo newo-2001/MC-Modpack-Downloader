@@ -14,6 +14,7 @@ export function getDefaultConfiguration(): PartialConfiguration {
         curseforge: {
             manifestFile: "manifest.json"
         },
-        confirmAll: false
+        confirmAll: false,
+        configFile: "settings.json"
     };
 }
