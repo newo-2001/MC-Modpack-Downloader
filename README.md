@@ -150,7 +150,7 @@ Additionally the following optional options can be specified:
 - `--log-file <path>` - The file to log to
 - `--log-level <level>` - The lowest level of importance to log. Valid values are: be `debug`, `info`, `warn`, and `error`
 - `--manifest-file <path>` - The file path of the modpack's manifest (only when using curseforge provider)
-- `--config-file <path>` or `-h <path>` - The file path of the settings.json configuration file (default value is `settings.json`)
+- `--config-file <path>` or `-c <path>` - The file path of the settings.json configuration file (default value is `settings.json`)
 
 > [!NOTE]
 > If you are using any of the options start with '-' or '--', an additional '--' following 'npm start' is required to indicate the start of the arguments to the actual script, this can be seen in the examples below.
