@@ -17,7 +17,8 @@ export interface Configuration {
     downloads: DownloadConfiguration
     curseforge: CurseForgeModProviderConfiguration,
     "modpacks.ch": ModpacksChModProviderConfiguration,
-    confirmAll: boolean
+    confirmAll: boolean,
+    configFile: String
 }
 
 export interface DownloadConfiguration {
@@ -30,8 +31,10 @@ export type PartialConfiguration = DeepPartial<Configuration>;
 export async function loadConfiguration(provider: ModProviderName): Promise<Configuration> {
     let config: PartialConfiguration = _.defaultsDeep({}, ...[
         getArgumentConfiguration(provider),
-        getEnvironmentConfiguration(),
-        await getJsonConfiguration(),
+        getEnvironmentConfiguration()
+    ]);
+    config = _.defaultsDeep(config, ...[
+        await getJsonConfiguration(config.configFile as string),
         getDefaultConfiguration()
     ]);
 

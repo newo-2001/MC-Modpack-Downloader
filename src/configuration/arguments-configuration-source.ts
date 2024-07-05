@@ -13,7 +13,8 @@ interface Arguments {
     "log-file": string,
     "log-level": LogLevel,
     "yes"?: boolean,
-    "help"?: boolean
+    "help"?: boolean,
+    "config-file"?: string
 }
 
 function int(value?: string): number | undefined {
@@ -45,7 +46,8 @@ export function getArgumentConfiguration(provider: ModProviderName): PartialConf
         concurrency: { type: int, optional: true, description: "The amount of downloads that will happen at the same time" },
         "output-directory": { type: String, optional: true, alias: 'o', description: "The folder to put the downloaded files into" },
         "log-file": { type: String, optional: true, description: "The file to log to" },
-        "log-level": { type: logLevel, optional: true, description: "The lowest level of importance to log. Valid values are: debug, info, warn, and error" }
+        "log-level": { type: logLevel, optional: true, description: "The lowest level of importance to log. Valid values are: debug, info, warn, and error" },
+        "config-file": { type: String, optional: true, alias: 'c', description: "The settings.json file path" }
     };
 
     if (provider == "modpacks.ch") {
@@ -78,7 +80,8 @@ export function getArgumentConfiguration(provider: ModProviderName): PartialConf
         "concurrency": { downloads: { concurrency: args["concurrency"] } },
         "output-directory": { downloads: { outputDirectory: args["output-directory"] } },
         "log-file": { logging: { logFile: args["log-file"] } },
-        "log-level": { logging: { logLevel: args["log-level"] } }
+        "log-level": { logging: { logLevel: args["log-level"] } },
+        "config-file": { configFile: args["config-file"] }
     };
 
     let config: PartialConfiguration = {};
