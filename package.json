@@ -7,7 +7,8 @@
     "start": "node --no-warnings --loader ts-node/esm src/app.ts",
     "curseforge": "node --no-warnings --loader ts-node/esm src/app.ts curseforge",
     "modpacks.ch": "node --no-warnings --loader ts-node/esm src/app.ts modpacks.ch",
-    "local": "node --no-warnings --loader ts-node/esm src/app.ts local"
+    "local": "node --no-warnings --loader ts-node/esm src/app.ts local",
+    "test": "vitest"
   },
   "author": "newo-2001",
   "license": "MIT",
@@ -15,7 +16,9 @@
     "@types/cli-progress": "^3.11.0",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^20.3.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "typemoq": "^2.1.0",
+    "vitest": "^2.0.2"
   },
   "dependencies": {
     "@inquirer/confirm": "^3.0.0",

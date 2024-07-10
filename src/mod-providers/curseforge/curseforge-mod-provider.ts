@@ -15,13 +15,13 @@ import { ABSTRACTIONS } from "../../abstractions.js";
 @injectable()
 export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifier, string> {
     private readonly httpClient: HttpClient;
-    
+
     constructor(
         @inject(ABSTRACTIONS.Configuration.Providers.CurseForge) private readonly config: CurseForgeModProviderConfiguration,
+        @inject(ABSTRACTIONS.HttpClients.CurseForge) httpClientFactory: (apiKey: string) => HttpClient,
         @inject(Logger) private readonly logger: Logger
     ) {
-        const headers = { "x-api-key": this.config.apiKey };
-        this.httpClient = new HttpClient("https://api.curseforge.com/v1", headers, this.logger);
+        this.httpClient = httpClientFactory(this.config.apiKey);
     }
 
     public async downloadMod(mod: CurseForgeModIdentifier): Promise<FileDownload> {

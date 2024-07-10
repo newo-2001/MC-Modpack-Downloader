@@ -1,8 +1,7 @@
-import { Container } from "inversify";
+import { Container, interfaces } from "inversify";
 import { ABSTRACTIONS } from "../abstractions.js";
 import { CurseForgeModProviderConfiguration } from "../mod-providers/curseforge/curseforge-types.js";
 import { ModpacksChModProviderConfiguration, ModpacksChModpackIdentifier } from "../mod-providers/modpacks.ch/modpacks.ch-types.js";
-import * as _ from "lodash-es";
 import { getJsonConfiguration } from "./json-configuration-source.js";
 import { getDefaultConfiguration } from "./default-configuration-source.js";
 import { getArgumentConfiguration } from "./arguments-configuration-source.js";
@@ -11,6 +10,8 @@ import { inputNumber } from "../interactive.js";
 import { DeepPartial } from "../utils.js";
 import { getEnvironmentConfiguration } from "./environment-configuration-source.js";
 import { LoggingConfiguration } from "../logging.js";
+import * as _ from "lodash-es";
+import { HttpClient } from "../http-client.js";
 
 export interface Configuration {
     logging: LoggingConfiguration
@@ -33,6 +34,7 @@ export async function loadConfiguration(provider: ModProviderName): Promise<Conf
         getArgumentConfiguration(provider),
         getEnvironmentConfiguration()
     ]);
+
     config = _.defaultsDeep(config, ...[
         await getJsonConfiguration(config.configFile as string),
         getDefaultConfiguration()

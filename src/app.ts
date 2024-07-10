@@ -14,6 +14,7 @@ import { ModProviderName } from "./mod-providers/mod-provider.js";
 import { ABSTRACTIONS } from "./abstractions.js";
 import { loadConfiguration, registerConfiguration } from "./configuration/configuration.js";
 import * as _ from "lodash-es";
+import { HttpClient } from "./http-client.js";
 
 const providers = {
     "curseforge": CurseForgeModProvider,
@@ -36,10 +37,17 @@ const provider: ModProviderName = await getProviderName(process.argv[2]);
 const config = await loadConfiguration(provider);
 
 const container = new Container();
-container.bind(ABSTRACTIONS.Services.ModProvider).to(providers[provider]).inTransientScope();
-container.bind(ABSTRACTIONS.Services.CurseForgeModProvider).to(CurseForgeModProvider).inTransientScope();
 registerConfiguration(container, config);
 registerLogger(container);
+
+container.bind(ABSTRACTIONS.Services.ModProvider).to(providers[provider]).inTransientScope();
+container.bind(ABSTRACTIONS.Services.CurseForgeModProvider).to(CurseForgeModProvider).inTransientScope();
+container.bind(ABSTRACTIONS.HttpClients.CurseForge).toFactory<HttpClient, [string]>(ctx => {
+    return (apiKey: string) => {
+        const headers = { "x-api-key": apiKey };
+        return new HttpClient("https://api.curseforge.com/v1", headers, ctx.container.get(Logger));
+    }
+})
 
 const logger = container.get(Logger);
 

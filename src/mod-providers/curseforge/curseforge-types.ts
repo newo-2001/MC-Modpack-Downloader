@@ -9,7 +9,6 @@ export interface CurseForgeModIdentifier {
 }
 
 export interface CurseForgeModMetadata {
-    isAvailable: boolean,
     downloadUrl?: string,
     fileName: string
 }
