@@ -54,7 +54,7 @@ export class CurseForgeModProvider implements ModProvider<CurseForgeModIdentifie
         return (await this.httpClient.get<{ data: CurseForgeProjectMetadata }>(url)).data;
     }
 
-    public async getModMetadata(mod: CurseForgeModIdentifier): Promise<CurseForgeModMetadata> {
+    private async getModMetadata(mod: CurseForgeModIdentifier): Promise<CurseForgeModMetadata> {
         const url = `/mods/${mod.projectID}/files/${mod.fileID}`;
 
         this.logger.debug(`Downloading mod metadata for file: ${mod.fileID} from CurseForge project: ${mod.projectID}`);

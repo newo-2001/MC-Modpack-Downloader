@@ -28,10 +28,10 @@ function logLevel(value?: string): LogLevel | undefined {
     return logLevels.find((level) => level == value)
 }
 
-function getArguments(): string[] {
-    if (process.argv.length < 2) return [];
+function trimArguments(argv: string[]): string[] {
+    if (argv.length < 2) return [];
 
-    let argv = process.argv.slice(2);
+    argv = argv.slice(2);
     while (argv[0] && !argv[0].startsWith('-')) {
         argv = argv.slice(1);
     }
@@ -39,7 +39,7 @@ function getArguments(): string[] {
     return argv;
 }
 
-export function getArgumentConfiguration(provider: ModProviderName): PartialConfiguration {
+export function getArgumentConfiguration(provider: ModProviderName, argv: string[]): PartialConfiguration {
     let argumentConfig: Partial<ArgumentConfig<Arguments>> = {
         help: { type: Boolean, optional: true, alias: 'h', description: "Prints this usage guide" },
         yes: { type: Boolean, optional: true, alias: 'y', description: "Automatically answer all confirmation prompts with 'yes'" },
@@ -66,7 +66,7 @@ export function getArgumentConfiguration(provider: ModProviderName): PartialConf
     const args = parse<Arguments>(
         argumentConfig as ArgumentConfig<Arguments>,
         {
-            argv: getArguments(),
+            argv: trimArguments(argv),
             processExitCode: 1,
             helpArg: "help"
         }

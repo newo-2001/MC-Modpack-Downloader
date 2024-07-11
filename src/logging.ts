@@ -2,14 +2,14 @@ import { Logger, format, transports } from "winston";
 import winston from "winston";
 import { Container } from "inversify";
 import { ABSTRACTIONS } from "./abstractions.js";
+import { createWriteStream } from "fs";
 
 function createLogger(config: LoggingConfiguration): Logger {
     return winston.createLogger({
         transports: [
-            new transports.File({
-                filename: config.logFile,
+            new transports.Stream({
+                stream: createWriteStream(config.logFile),
                 level: config.logLevel,
-                options: { flags: 'w' },
                 format: format.combine(
                     format.timestamp(),
                     format.printf(({ timestamp, level, message }) => {

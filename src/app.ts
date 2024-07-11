@@ -32,63 +32,65 @@ async function getProviderName(provider?: string): Promise<ModProviderName> {
     }
 }
 
-const provider: ModProviderName = await getProviderName(process.argv[2]);
+export async function run(argv: string[] = process.argv) {
+    const provider: ModProviderName = await getProviderName(argv[2]);
 
-const config = await loadConfiguration(provider);
+    const config = await loadConfiguration(provider, argv);
 
-const container = new Container();
-registerConfiguration(container, config);
-registerLogger(container);
+    const container = new Container();
+    registerConfiguration(container, config);
+    registerLogger(container);
 
-container.bind(ABSTRACTIONS.Services.ModProvider).to(providers[provider]).inTransientScope();
-container.bind(ABSTRACTIONS.Services.CurseForgeModProvider).to(CurseForgeModProvider).inTransientScope();
-container.bind(ABSTRACTIONS.HttpClients.CurseForge).toFactory<HttpClient, [string]>(ctx => {
-    return (apiKey: string) => {
-        const headers = { "x-api-key": apiKey };
-        return new HttpClient("https://api.curseforge.com/v1", headers, ctx.container.get(Logger));
-    }
-})
+    container.bind(ABSTRACTIONS.Services.ModProvider).to(providers[provider]).inTransientScope();
+    container.bind(ABSTRACTIONS.Services.CurseForgeModProvider).to(CurseForgeModProvider).inTransientScope();
+    container.bind(ABSTRACTIONS.HttpClients.CurseForge).toFactory<HttpClient, [string]>(ctx => {
+        return (apiKey: string) => {
+            const headers = { "x-api-key": apiKey };
+            return new HttpClient("https://api.curseforge.com/v1", headers, ctx.container.get(Logger));
+        }
+    })
 
-const logger = container.get(Logger);
+    const logger = container.get(Logger);
 
-{
-    logger.info(`MC-Modpack-Downloader ${process.env.npm_package_version}`);
-    logger.debug(`Invoked with arguments: ${process.argv.slice(2).join(" ")}`);
+    {
+        logger.info(`MC-Modpack-Downloader ${process.env.npm_package_version}`);
+        logger.debug(`Invoked with arguments: ${argv.slice(2).join(" ")}`);
 
-    let redactedConfig = _.cloneDeep(config) as any;
-    delete redactedConfig.curseforge.apiKey;
+        let redactedConfig = _.cloneDeep(config) as any;
+        delete redactedConfig.curseforge.apiKey;
 
-    logger.debug(`Using configuration: ${JSON.stringify(redactedConfig)}`);
-}
-
-if (!await isDirectoryEmpty(config.downloads.outputDirectory)) {
-    if (config.confirmAll) {
-        logger.warn("Output directory is not empty");
-    } else if (await warnNonEmptyOutputDirectory()) {
-        logger.info("Continuing with non-empty output directory");
-    } else {
-        exit(0);
-    }
-}
-
-const modpackId = {
-    "modpacks.ch": config["modpacks.ch"].modpack,
-    "curseforge": config.curseforge.manifestFile,
-    "local": "debug"
-}[provider];
-
-const orchestrator = container.resolve(DownloadOrchestrator);
-
-try {
-    await orchestrator.downloadAllFromModpackId(modpackId);
-} catch (err) {
-    if (err instanceof FatalError) {
-        logger.error(err.message);
-    } else if (err instanceof Error) {
-        logger.error(err.stack);
-    } else {
-        logger.error("Something went wrong, no error information provided");
+        logger.debug(`Using configuration: ${JSON.stringify(redactedConfig)}`);
     }
 
-    exit(1);
+    if (!await isDirectoryEmpty(config.downloads.outputDirectory)) {
+        if (config.confirmAll) {
+            logger.warn("Output directory is not empty");
+        } else if (await warnNonEmptyOutputDirectory()) {
+            logger.info("Continuing with non-empty output directory");
+        } else {
+            exit(0);
+        }
+    }
+
+    const modpackId = {
+        "modpacks.ch": config["modpacks.ch"].modpack,
+        "curseforge": config.curseforge.manifestFile,
+        "local": "debug"
+    }[provider];
+
+    const orchestrator = container.resolve(DownloadOrchestrator);
+
+    try {
+        await orchestrator.downloadAllFromModpackId(modpackId);
+    } catch (err) {
+        if (err instanceof FatalError) {
+            logger.error(err.message);
+        } else if (err instanceof Error) {
+            logger.error(err.stack);
+        } else {
+            logger.error("Something went wrong, no error information provided");
+        }
+
+        exit(1);
+    }
 }

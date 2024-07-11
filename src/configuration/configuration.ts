@@ -29,9 +29,9 @@ export interface DownloadConfiguration {
 
 export type PartialConfiguration = DeepPartial<Configuration>;
 
-export async function loadConfiguration(provider: ModProviderName): Promise<Configuration> {
+export async function loadConfiguration(provider: ModProviderName, argv: string[]): Promise<Configuration> {
     let config: PartialConfiguration = _.defaultsDeep({}, ...[
-        getArgumentConfiguration(provider),
+        getArgumentConfiguration(provider, argv),
         getEnvironmentConfiguration()
     ]);
 
