@@ -48,7 +48,11 @@ export async function run(argv: string[] = process.argv) {
             const headers = { "x-api-key": apiKey };
             return new HttpClient("https://api.curseforge.com/v1", headers, ctx.container.get(Logger));
         }
-    })
+    });
+
+    container.bind(ABSTRACTIONS.HttpClients["Modpacks.ch"]).toDynamicValue(ctx => {
+        return new HttpClient("https://api.modpacks.ch/public", {}, ctx.container.get(Logger))
+    }).inTransientScope();
 
     const logger = container.get(Logger);
 

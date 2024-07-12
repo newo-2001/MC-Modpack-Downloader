@@ -22,13 +22,11 @@ type ModpacksChResponse<T> = ModpacksChSuccessResponse<T> | ModpacksChErrorRespo
 
 @injectable()
 export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest, ModpacksChModpackIdentifier> {
-    private readonly httpClient: HttpClient;
-
     public constructor(
         @inject(ABSTRACTIONS.Services.CurseForgeModProvider) private readonly curseforge: ModProvider<CurseForgeModIdentifier, string>,
+        @inject(ABSTRACTIONS.HttpClients["Modpacks.ch"]) private readonly httpClient: HttpClient,
         @inject(Logger) private readonly logger: Logger
     ) {
-        this.httpClient = new HttpClient("https://api.modpacks.ch/public", {}, logger);
     }
 
     public async downloadMod(mod: ModpacksChModManifest): Promise<FileDownload> {
@@ -62,12 +60,12 @@ export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest,
         return { name, files };
     }
 
-    public getFullModpackManifest(modpackId: number): Promise<ModpacksChModpackManifest> {
+    private getFullModpackManifest(modpackId: number): Promise<ModpacksChModpackManifest> {
         this.logger.debug(`Downloading modpack manifest for modpack with id: ${modpackId}`);
-        return this.httpClient.get<ModpacksChModpackManifest>(`/modpack/${modpackId}`);
+        return this.httpGet<ModpacksChModpackManifest>(`/modpack/${modpackId}`);
     }
 
-    public getModpackVersionManifest(modpack: ModpacksChModpackIdentifier): Promise<ModpacksChModpackVersionManifest> {
+    private getModpackVersionManifest(modpack: ModpacksChModpackIdentifier): Promise<ModpacksChModpackVersionManifest> {
         const url = `/modpack/${modpack.id}/${modpack.version}`;
         this.logger.debug(`Downloading modpack version manifest for modpack with id: ${modpack.id}, version: ${modpack.version}`);
         return this.httpGet<ModpacksChModpackVersionManifest>(url);

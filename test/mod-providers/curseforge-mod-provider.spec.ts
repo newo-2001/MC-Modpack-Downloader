@@ -13,7 +13,10 @@ import { vol } from "memfs";
 vi.mock("node:fs", () => require("memfs").fs);
 vi.mock("node:fs/promises", () => require("memfs").promises);
 
-beforeEach(() => vol.reset());
+beforeEach(() => {
+    httpClientMock.reset();
+    vol.reset()
+});
 
 const loggerMock = Mock.ofType<Logger>();
 const httpClientMock = Mock.ofType<HttpClient>();
@@ -30,15 +33,17 @@ describe("downloadMod()", () => {
 
         const mockHttpClient = Mock.ofType(HttpClient);
 
-        mockHttpClient.setup(x => x.get<{ data: CurseForgeModMetadata }>(`/mods/${modId.projectID}/files/${modId.fileID}`))
-            .returns(() => Promise.resolve({ data: mod }));
+        mockHttpClient.setup(x =>
+            x.get<{ data: CurseForgeModMetadata }>(`/mods/${modId.projectID}/files/${modId.fileID}`)
+        ).returns(() => Promise.resolve({ data: mod }));
 
         const memoryStream = new Readable();
         memoryStream.push(payload);
         memoryStream.push(null);
 
-        mockHttpClient.setup(x => x.download(mod.downloadUrl!))
-            .returns(() => Promise.resolve(memoryStream));
+        mockHttpClient.setup(x =>
+            x.download(mod.downloadUrl!)
+        ).returns(() => Promise.resolve(memoryStream));
 
         const sut = new CurseForgeModProvider(emptyConfig, () => mockHttpClient.object, loggerMock.object);
         
@@ -62,11 +67,13 @@ describe("downloadMod()", () => {
             fileName: "file.jar"
         } as CurseForgeModMetadata;
 
-        httpClientMock.setup(x => x.get<{ data: CurseForgeModMetadata }>(`/mods/${modId.projectID}/files/${modId.fileID}`))
-            .returns(() => Promise.resolve({ data: mod }));
+        httpClientMock.setup(
+            x => x.get<{ data: CurseForgeModMetadata }>(`/mods/${modId.projectID}/files/${modId.fileID}`)
+        ).returns(() => Promise.resolve({ data: mod }));
         
-        httpClientMock.setup(x => x.get<{ data: CurseForgeProjectMetadata }>(`/mods/${modId.projectID}`))
-            .returns(() => Promise.resolve({ data: project }));
+        httpClientMock.setup(x =>
+            x.get<{ data: CurseForgeProjectMetadata }>(`/mods/${modId.projectID}`)
+        ).returns(() => Promise.resolve({ data: project }));
 
         const sut = new CurseForgeModProvider(emptyConfig, () => httpClientMock.object, loggerMock.object);
         
@@ -77,8 +84,9 @@ describe("downloadMod()", () => {
     test("throws InvalidApiKeyException when API returns 403 forbidden", async () => {
         const modId: CurseForgeModIdentifier = { projectID: 1, fileID: 1 };
 
-        httpClientMock.setup(x => x.get(`/mods/${modId.projectID}/files/${modId.fileID}`))
-            .returns(() => Promise.reject(new HttpException("", 403)))
+        httpClientMock.setup(x =>
+            x.get(`/mods/${modId.projectID}/files/${modId.fileID}`)
+        ).returns(() => Promise.reject(new HttpException("", 403)))
 
         const sut = new CurseForgeModProvider(emptyConfig, () => httpClientMock.object, loggerMock.object);
 
@@ -87,21 +95,30 @@ describe("downloadMod()", () => {
     });
 });
 
-test("getManifest() reads the specified json file", async () => {
-    const manifest = { files: [ "a.jar", "b.jar" ] };
-    const config = {
-        manifestFile: "test.json"
-    } as CurseForgeModProviderConfiguration;
+describe("getManifest()", () => {
+    test("called with a valid path reads the specified json file", async() => {
+        const manifest = { files: [ "a.jar", "b.jar" ] };
+        const config = {
+            manifestFile: "test.json"
+        } as CurseForgeModProviderConfiguration;
 
-    vol.fromJSON({ [config.manifestFile]: JSON.stringify(manifest) }, process.cwd());
+        vol.fromJSON({ [config.manifestFile]: JSON.stringify(manifest) }, process.cwd());
 
-    const sut = new CurseForgeModProvider(config, () => httpClientMock.object, loggerMock.object);
-    const result = await sut.getManifest(config.manifestFile);
+        const sut = new CurseForgeModProvider(config, () => httpClientMock.object, loggerMock.object);
+        const result = await sut.getManifest(config.manifestFile);
 
-    expect(result).toMatchObject(manifest);
+        expect(result).toEqual(manifest);
+    });
+
+    test("called with an invalid path throws an error", async() => {
+        const sut = new CurseForgeModProvider(emptyConfig, () => httpClientMock.object, loggerMock.object);
+
+        expect(sut.getManifest("invalid.json"))
+            .rejects.toThrowError("Failed to read JSON file: invalid.json");
+    })
 });
 
-test("name() returns 'CurseForge'", () => {
+test("getName() returns 'CurseForge'", () => {
     const sut = new CurseForgeModProvider(emptyConfig, () => httpClientMock.object, loggerMock.object);
-    expect(sut.getName()).toStrictEqual("CurseForge");
+    expect(sut.getName()).toBe("CurseForge");
 });
