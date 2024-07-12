@@ -6,10 +6,13 @@ import { setupServer } from "msw/node";
 import { run } from "../../src/app";
 import { CurseForgeModMetadata, CurseForgeProjectMetadata } from "../../src/mod-providers/curseforge/curseforge-types";
 import winston from "winston";
+import { DeepPartial } from "../../src/utils";
+import { Configuration } from "../../src/configuration/configuration";
 
 vi.mock("node:fs", () => require("memfs").fs);
 vi.mock("node:fs/promises", () => require("memfs").promises);
 
+// Ideally this assertion is done on stdout directly, instead of winston
 const consoleSpy = vi.spyOn(winston.transports.Console.prototype, "log");
 
 beforeEach(() => {
@@ -24,7 +27,7 @@ describe("curseforge command", () => {
             files: [1, 2, 3].map(i => ({ projectID: i, fileID: i }))
         };
 
-        const settings = {
+        const settings: DeepPartial<Configuration> = {
             curseforge: { apiKey: "abcdefg" }
         };
 
@@ -62,7 +65,7 @@ describe("curseforge command", () => {
             http.get(`${cdnBaseUrl}/def.jar`, () => HttpResponse.text("test2")),
 
             ...apiEndpoints.map(({ endpoint, response }) => http.get(apiBaseUrl + endpoint, req => {
-                if (req.request.headers.get("x-api-key") != settings.curseforge.apiKey) {
+                if (req.request.headers.get("x-api-key") != settings.curseforge!.apiKey) {
                     return new HttpResponse("Invalid API key", { status: 403 });
                 }
 
@@ -79,13 +82,11 @@ describe("curseforge command", () => {
         expect(vol.readFileSync("mods/first.jar", "utf-8")).toBe("test");
         expect(vol.readFileSync("mods/second.jar", "utf-8")).toBe("test2");
 
-        // Ideally this assertion is done on stdout directly, instead of winston
         expect(consoleSpy).toHaveBeenLastCalledWith(
             expect.objectContaining({
                 message: expect.stringContaining("third.jar https://curseforge.com/minecraft/mc-mods/test-mod/files/3")
             }),
             expect.anything()
         );
-
     });
 });

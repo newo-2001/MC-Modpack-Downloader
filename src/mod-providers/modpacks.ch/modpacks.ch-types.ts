@@ -10,7 +10,7 @@ export interface ModpacksChModpackManifest {
 export interface ModpacksChModManifest {
     path: string,
     name: string,
-    url: string,
+    url?: string,
     curseforge?: ModpacksChCurseForgeFile
 }
 
