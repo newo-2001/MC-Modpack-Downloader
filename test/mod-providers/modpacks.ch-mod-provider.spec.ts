@@ -7,6 +7,8 @@ import { Logger } from "winston";
 import { ModProvider } from "../../src/mod-providers/mod-provider";
 import { CurseForgeModIdentifier } from "../../src/mod-providers/curseforge/curseforge-types";
 import { ModpacksChModManifest, ModpacksChModpackManifest, ModpacksChModpackVersionManifest } from "../../src/mod-providers/modpacks.ch/modpacks.ch-types";
+import { Readable } from "node:stream";
+import { NoDownloadException } from "../../src/exceptions";
 
 const loggerMock = Mock.ofType<Logger>();
 const httpClientMock = Mock.ofType<HttpClient>();
@@ -17,6 +19,76 @@ beforeEach(() => {
     httpClientMock.reset();
     curseForgeProviderMock.reset();
     sut = new ModpacksChModProvider(curseForgeProviderMock.object, httpClientMock.object, loggerMock.object);
+});
+
+describe("downloadMod()", () => {
+    test("downloads the content from the specified url when present", async () => {
+        const mod: ModpacksChModManifest = {
+            path: "./config/test-mod/",
+            name: "config.json",
+            url: "https://example.com/config.json"
+        };
+
+        const memoryStream = new Readable();
+        memoryStream.push("test");
+        memoryStream.push(null);
+
+        httpClientMock.setup(x =>
+            x.download(mod.url!)
+        ).returns(() => Promise.resolve(memoryStream));
+
+        const result = await sut.downloadMod(mod);
+
+        expect(result.path).toBe("\\config\\test-mod\\config.json");
+
+        const stream = await result.download();
+        stream.setEncoding("utf8");
+
+        expect(stream.read()).toBe("test");
+    });
+
+    test("downloads the content from CurseForge if the curseforge field is present", async () => {
+        const mod: ModpacksChModManifest = {
+            path: "./mods/",
+            name: "a.jar",
+            curseforge: {
+                file: 1,
+                project: 2
+            }
+        };
+
+        const memoryStream = new Readable();
+        memoryStream.push("test");
+        memoryStream.push(null);
+
+        curseForgeProviderMock.setup(x =>
+            x.downloadMod({
+                fileID: mod.curseforge!.file,
+                projectID: mod.curseforge!.project
+            })
+        ).returns(() => Promise.resolve({
+            path: "a.jar",
+            download: () => Promise.resolve(memoryStream)
+        }));
+        
+        const result = await sut.downloadMod(mod);
+        expect(result.path).toBe("\\mods\\a.jar");
+
+        const stream = await result.download();
+        stream.setEncoding("utf8");
+
+        expect(stream.read()).toBe("test");
+    });
+
+    test("throws NoDownloadException if url and curseforge are not present", () => {
+        const mod: ModpacksChModManifest = {
+            path: "./mods/",
+            name: "a.jar"
+        };
+
+        expect(sut.downloadMod(mod))
+            .rejects.toThrowError(new NoDownloadException("\\mods\\a.jar"));
+    });
 });
 
 describe("getManifest()", () => {

@@ -1,9 +1,9 @@
 import { inject, injectable } from "inversify";
-import { dirname, join } from "path";
+import * as path from "path";
 import { finished } from "stream/promises";
 import { ConcurrentTask, ConcurrentTaskProgress } from "./concurrent-task.js";
 import { Presets, SingleBar } from "cli-progress";
-import { WriteStream, createWriteStream, existsSync } from "fs";
+import * as fs from "fs";
 import { mkdir } from "fs/promises";
 import { InvalidApiKeyException, NoDownloadException } from "./exceptions.js";
 import { Logger } from "winston";
@@ -95,11 +95,11 @@ export class DownloadOrchestrator<TPackId, TModId> {
     private async downloadMod(mod: TModId): Promise<void> {
         const name = this.provider.getModName(mod);
 
-        const { path, download } = await this.provider.downloadMod(mod);
-        const destination = join(this.downloadConfig.outputDirectory, path);
+        const { path: downloadPath, download } = await this.provider.downloadMod(mod);
+        const destination = path.join(this.downloadConfig.outputDirectory, downloadPath);
 
         // Should probably check if hash matches to avoid partial downloads persisting
-        if (existsSync(destination)) {
+        if (fs.existsSync(destination)) {
             this.logger.debug(`Skipping download, file already exists: ${path}`)
             return;
         }
@@ -112,7 +112,7 @@ export class DownloadOrchestrator<TPackId, TModId> {
     }
 }
 
-async function openWritableFileStream(location: string): Promise<WriteStream> {
-    await mkdir(dirname(location), { recursive: true });
-    return createWriteStream(location);
+async function openWritableFileStream(location: string): Promise<fs.WriteStream> {
+    await mkdir(path.dirname(location), { recursive: true });
+    return fs.createWriteStream(location);
 }

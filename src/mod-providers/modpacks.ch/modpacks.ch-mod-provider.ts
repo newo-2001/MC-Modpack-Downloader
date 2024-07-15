@@ -1,7 +1,6 @@
 import { inject, injectable } from "inversify";
 import { HttpClient } from "../../http-client.js";
 import { ModpacksChModManifest, ModpacksChModpackIdentifier, ModpacksChModpackManifest, ModpacksChModpackVersionManifest } from "./modpacks.ch-types.js";
-import { join } from "path";
 import { CurseForgeModIdentifier } from "../curseforge/curseforge-types.js";
 import { FatalError, NoDownloadException } from "../../exceptions.js";
 import { Logger } from "winston";
@@ -26,16 +25,15 @@ export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest,
         @inject(ABSTRACTIONS.Services.CurseForgeModProvider) private readonly curseforge: ModProvider<CurseForgeModIdentifier, string>,
         @inject(ABSTRACTIONS.HttpClients["Modpacks.ch"]) private readonly httpClient: HttpClient,
         @inject(Logger) private readonly logger: Logger
-    ) {
-    }
+    ) {}
 
     public async downloadMod(mod: ModpacksChModManifest): Promise<FileDownload> {
         const dirname = mod.path.substring(1, mod.path.length-1);
-        const path = join(dirname, mod.name);
+        const downloadPath = path.join(dirname, mod.name);
 
         if (mod.url) {
             return {
-                path,
+                path: downloadPath,
                 download: () => this.httpClient.download(mod.url)
             }
         } else if (mod.curseforge) {
@@ -45,12 +43,12 @@ export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest,
             this.logger.debug(`Delegating download for file: ${path} to CurseForge`);
 
             return {
-                path,
+                path: downloadPath,
                 download: (await this.curseforge.downloadMod(modId)).download
             }
         }
 
-        throw new NoDownloadException(path);
+        throw new NoDownloadException(downloadPath);
     }
 
     public async getManifest(modpack: ModpacksChModpackIdentifier): Promise<ModpackManifest<ModpacksChModManifest>> {

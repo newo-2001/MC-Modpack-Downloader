@@ -1,3 +1,4 @@
+import { ParsedPath } from "path";
 import { Readable } from "stream"
 
 export type ModProviderName = "curseforge" | "modpacks.ch" | "local";
