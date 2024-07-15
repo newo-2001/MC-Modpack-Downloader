@@ -34,7 +34,7 @@ export class DownloadOrchestrator<TPackId, TModId> {
         const fileAmount = manifest.files.length;
 
         const downloadTasks = manifest.files.map(mod => () => this.downloadMod(mod));
-        const task = new ConcurrentTask(downloadTasks, { concurrency: this.downloadConfig.concurrency});
+        const task = new ConcurrentTask(downloadTasks, { concurrency: this.downloadConfig.concurrency });
 
         const progressBar = new SingleBar({}, Presets.shades_classic);
         progressBar.start(downloadTasks.length, 0);
@@ -100,7 +100,7 @@ export class DownloadOrchestrator<TPackId, TModId> {
 
         // Should probably check if hash matches to avoid partial downloads persisting
         if (fs.existsSync(destination)) {
-            this.logger.debug(`Skipping download, file already exists: ${path}`)
+            this.logger.debug(`Skipping download, file already exists: ${downloadPath}`)
             return;
         }
 
@@ -108,7 +108,7 @@ export class DownloadOrchestrator<TPackId, TModId> {
         const fileStream = await openWritableFileStream(destination);
         await finished(data.pipe(fileStream));
 
-        this.logger.debug(`Successfully downloaded mod: ${name} to ${path}`);
+        this.logger.debug(`Successfully downloaded mod: ${name} to ${downloadPath}`);
     }
 }
 

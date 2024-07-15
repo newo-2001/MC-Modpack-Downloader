@@ -9,6 +9,7 @@ import { CurseForgeModIdentifier } from "../../src/mod-providers/curseforge/curs
 import { ModpacksChModManifest, ModpacksChModpackManifest, ModpacksChModpackVersionManifest } from "../../src/mod-providers/modpacks.ch/modpacks.ch-types";
 import { Readable } from "node:stream";
 import { NoDownloadException } from "../../src/exceptions";
+import path from "node:path";
 
 const loggerMock = Mock.ofType<Logger>();
 const httpClientMock = Mock.ofType<HttpClient>();
@@ -39,7 +40,7 @@ describe("downloadMod()", () => {
 
         const result = await sut.downloadMod(mod);
 
-        expect(result.path).toBe("\\config\\test-mod\\config.json");
+        expect(result.path).toBe(path.join("config", "test-mod", "config.json"));
 
         const stream = await result.download();
         stream.setEncoding("utf8");
@@ -72,7 +73,7 @@ describe("downloadMod()", () => {
         }));
         
         const result = await sut.downloadMod(mod);
-        expect(result.path).toBe("\\mods\\a.jar");
+        expect(result.path).toBe(path.join("mods", "a.jar"));
 
         const stream = await result.download();
         stream.setEncoding("utf8");
@@ -87,7 +88,7 @@ describe("downloadMod()", () => {
         };
 
         expect(sut.downloadMod(mod))
-            .rejects.toThrowError(new NoDownloadException("\\mods\\a.jar"));
+            .rejects.toThrowError(new NoDownloadException(path.join("mods", "a.jar")));
     });
 });
 

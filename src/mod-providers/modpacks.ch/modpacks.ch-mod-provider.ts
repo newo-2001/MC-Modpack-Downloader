@@ -28,7 +28,7 @@ export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest,
     ) {}
 
     public async downloadMod(mod: ModpacksChModManifest): Promise<FileDownload> {
-        const dirname = mod.path.substring(1, mod.path.length-1);
+        const dirname = mod.path.substring(2, mod.path.length-1);
         const downloadPath = path.join(dirname, mod.name);
 
         if (mod.url) {
@@ -40,7 +40,7 @@ export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest,
             const { file, project } = mod.curseforge;
             const modId: CurseForgeModIdentifier = { fileID: file, projectID: project };
 
-            this.logger.debug(`Delegating download for file: ${path} to CurseForge`);
+            this.logger.debug(`Delegating download for file: ${downloadPath} to CurseForge`);
 
             return {
                 path: downloadPath,
