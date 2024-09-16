@@ -1,4 +1,7 @@
 # MC Modpack Downloader
+[![CI](https://github.com/newo-2001/MC-Modpack-Downloader/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/newo-2001/MC-Modpack-Downloader/actions/workflows/ci.yml)
+[![cov](https://newo-2001.github.io/MC-Modpack-Downloader/badges/coverage.svg)](https://github.com/newo-2001/MC-Modpack-Downloader/actions)
+
 ### What is this?
 This is a script to pull minecraft mods from a set of API's given a manifest file.
 
