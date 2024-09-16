@@ -21,6 +21,7 @@ If you run into any issues whilst trying to use the script or just don't underst
     - [settings.json](#settings.json)
     - [Arguments](#arguments)
 - [Deprecations](#deprecations)
+- [Contributing](#contributing)
 
 # How to use
 ## Prerequisites
@@ -30,7 +31,7 @@ This project has been tested for Node 19.7.0. If you are experiencing any issues
 
 ## Initial setup
 If this is your first time running the script you have to perform some additional setup:
-1. Open a terminal in this folder and run the command `npm install`.
+1. Open a terminal in this folder and run the command `npm install --omit=dev`.
 
 > [!IMPORTANT]
 > The above step has to be repeated after pulling a new version of the script.
@@ -175,3 +176,9 @@ The following features are considered deprecated and might be removed in a futur
 | The npm scripts `npm run curseforge` and `npm run modpacks.ch` | Use the alternatives `npm start curseforge` and `npm start modpacks.ch` | v1.1.0 |
 | The `modpacks.ch -> modpack` settings block in `settings.json` | Use the interactive prompt or command line arguments instead | v1.2.0 |
 | The `curseforge_api_key` environment variable for `docker run`| Use the environment variable `MCDL_CURSEFORGE_API_KEY` instead | v2.1.0 |
+
+# Contributing
+Contributions are always welcome and go through the regular GitHub PR process.
+Before you start contributing, ensure you install the additional development dependencies using the `npm install` command.
+Automated tests can be run locally using the `npm test` command.
+The `local` modpack provider can be used with command `npm start local`. It will use the `debug` folder on the filesystem as a mod-provider as to not incur unnecessary load on external providers.
