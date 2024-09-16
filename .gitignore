@@ -6,4 +6,5 @@ settings.json
 .vscode
 dist
 packs
+coverage
 *.log
