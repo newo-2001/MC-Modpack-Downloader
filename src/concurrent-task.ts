@@ -30,7 +30,7 @@ export class ConcurrentTask<T> extends EventEmitter {
         return new Promise((resolve, _) => {
             this.on(ConcurrentTask.FinishedEvent, () => resolve(this.results));
 
-            for (let i = 0; i < concurrency; i++) {
+            for (let i = 0; i < Math.min(concurrency, this.totalTasks); i++) {
                 this.nextTask();
             }
         })
