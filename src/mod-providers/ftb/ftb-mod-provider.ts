@@ -1,33 +1,33 @@
 import { inject, injectable } from "inversify";
 import { HttpClient } from "../../http-client.js";
-import { ModpacksChModManifest, ModpacksChModpackIdentifier, ModpacksChModpackManifest, ModpacksChModpackVersionManifest } from "./modpacks.ch-types.js";
 import { CurseForgeModIdentifier } from "../curseforge/curseforge-types.js";
 import { FatalError, NoDownloadException } from "../../exceptions.js";
 import { Logger } from "winston";
 import * as path from "path";
 import { FileDownload, ModProvider, ModpackManifest } from "../mod-provider.js";
 import { ABSTRACTIONS } from "../../abstractions.js";
+import { FTBModManifest, FTBModpackIdentifier, FTBModpackManifest, FTBModpackVersionManifest } from "./ftb-types.js";
 
-type ModpacksChSuccessResponse<T extends {}> = T & {
+type FTBSuccessResponse<T extends {}> = T & {
     status: "success"
 }
 
-interface ModpacksChErrorResponse {
+interface FTBErrorResponse {
     status: "error",
     message: string
 }
 
-type ModpacksChResponse<T> = ModpacksChSuccessResponse<T> | ModpacksChErrorResponse
+type FTBResponse<T> = FTBSuccessResponse<T> | FTBErrorResponse
 
 @injectable()
-export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest, ModpacksChModpackIdentifier> {
+export class FTBModProvider implements ModProvider<FTBModManifest, FTBModpackIdentifier> {
     public constructor(
         @inject(ABSTRACTIONS.Services.CurseForgeModProvider) private readonly curseforge: ModProvider<CurseForgeModIdentifier, string>,
-        @inject(ABSTRACTIONS.HttpClients["Modpacks.ch"]) private readonly httpClient: HttpClient,
+        @inject(ABSTRACTIONS.HttpClients.FTB) private readonly httpClient: HttpClient,
         @inject(Logger) private readonly logger: Logger
     ) {}
 
-    public async downloadMod(mod: ModpacksChModManifest): Promise<FileDownload> {
+    public async downloadMod(mod: FTBModManifest): Promise<FileDownload> {
         const dirname = mod.path.substring(2, mod.path.length-1);
         const downloadPath = path.join(dirname, mod.name);
 
@@ -51,35 +51,35 @@ export class ModpacksChModProvider implements ModProvider<ModpacksChModManifest,
         throw new NoDownloadException(downloadPath);
     }
 
-    public async getManifest(modpack: ModpacksChModpackIdentifier): Promise<ModpackManifest<ModpacksChModManifest>> {
+    public async getManifest(modpack: FTBModpackIdentifier): Promise<ModpackManifest<FTBModManifest>> {
         const { name } = await this.getFullModpackManifest(modpack.id);
         const { files } = await this.getModpackVersionManifest(modpack);
 
         return { name, files };
     }
 
-    private getFullModpackManifest(modpackId: number): Promise<ModpacksChModpackManifest> {
+    private getFullModpackManifest(modpackId: number): Promise<FTBModpackManifest> {
         this.logger.debug(`Downloading modpack manifest for modpack with id: ${modpackId}`);
-        return this.httpGet<ModpacksChModpackManifest>(`/modpack/${modpackId}`);
+        return this.httpGet<FTBModpackManifest>(`/modpack/${modpackId}`);
     }
 
-    private getModpackVersionManifest(modpack: ModpacksChModpackIdentifier): Promise<ModpacksChModpackVersionManifest> {
+    private getModpackVersionManifest(modpack: FTBModpackIdentifier): Promise<FTBModpackVersionManifest> {
         const url = `/modpack/${modpack.id}/${modpack.version}`;
         this.logger.debug(`Downloading modpack version manifest for modpack with id: ${modpack.id}, version: ${modpack.version}`);
-        return this.httpGet<ModpacksChModpackVersionManifest>(url);
+        return this.httpGet<FTBModpackVersionManifest>(url);
     }
 
-    public getModName(modId: ModpacksChModManifest): string {
+    public getModName(modId: FTBModManifest): string {
         return path.join(modId.path, modId.name);
     }
 
     public getName(): string {
-        return "modpacks.ch";
+        return "FTB";
     }
 
     // Having to deal with 200 OK, status: error (-_-;)
     private async httpGet<T>(endpoint: string): Promise<T> {
-        const response = await this.httpClient.get<ModpacksChResponse<T>>(endpoint);
+        const response = await this.httpClient.get<FTBResponse<T>>(endpoint);
 
         if (response.status == "error") {
             throw new FatalError(response.message);

@@ -1,12 +1,13 @@
 {
   "name": "mcmodpackdownloader",
-  "version": "3.0.0",
+  "version": "2.2.0",
   "description": "Download minecraft modpacks without the need for the FTB app or Overwolf.",
   "type": "module",
   "scripts": {
     "start": "node --no-warnings --loader ts-node/esm src/main.ts",
     "curseforge": "node --no-warnings --loader ts-node/esm src/main.ts curseforge",
     "modpacks.ch": "node --no-warnings --loader ts-node/esm src/main.ts modpacks.ch",
+    "ftb": "node --no-warnings --loader ts-node/esm src/main.ts ftb",
     "local": "node --no-warnings --loader ts-node/esm src/main.ts local",
     "test": "vitest",
     "coverage": "vitest run --coverage.enabled --config test/unit-tests.vitest.config.ts"

@@ -2,12 +2,12 @@ import "reflect-metadata";
 import { vol } from "memfs";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import { run } from "../../src/app";
-import { ModpacksChModManifest, ModpacksChModpackIdentifier, ModpacksChModpackManifest, ModpacksChModpackVersionManifest } from "../../src/mod-providers/modpacks.ch/modpacks.ch-types";
 import { DeepPartial } from "../../src/utils";
 import { Configuration } from "../../src/configuration/configuration";
 import winston from "winston";
+import { FTBModManifest, FTBModpackIdentifier, FTBModpackManifest, FTBModpackVersionManifest } from "../../src/mod-providers/ftb/ftb-types";
 
 vi.mock("node:fs", () => require("memfs").fs);
 vi.mock("node:fs/promises", () => require("memfs").promises);
@@ -15,22 +15,22 @@ vi.mock("node:fs/promises", () => require("memfs").promises);
 // Ideally this assertion is done on stdout directly, instead of winston
 const consoleSpy = vi.spyOn(winston.transports.Console.prototype, "log");
 
-beforeEach(() => {
-    vol.reset();
+afterEach(() => {
+    vol.rmdirSync("/", { recursive: true });
     consoleSpy.mockClear();
 });
 
-describe("modpacks.ch command", () => {
-    test("downloads the mods for a given modpack id from the modpacks.ch API", async () => {
-        const modpackId: ModpacksChModpackIdentifier = { id: 1, version: 1 };
+describe("ftb command", () => {
+    test("downloads the mods for a given modpack id from the FTB API", async () => {
+        const modpackId: FTBModpackIdentifier = { id: 1, version: 1 };
 
-        const modpacksChBaseUrl = "https://api.modpacks.ch/public";
+        const ftbApiBaseUrl = "https://api.feed-the-beast.com/v1/modpacks/public";
 
         const settings: DeepPartial<Configuration> = { curseforge: { apiKey: "abcdefg" } };
 
         vol.fromJSON({ "settings.json": JSON.stringify(settings) }, process.cwd());
 
-        const modpacksChFileEndpoints: { [name: string]: ModpacksChModManifest & { content?: string } } = {
+        const ftbFileEndpoints: { [name: string]: FTBModManifest & { content?: string } } = {
             mod1: {
                 path: "./mods/",
                 name: "mod1.jar",
@@ -87,15 +87,15 @@ describe("modpacks.ch command", () => {
         ];
 
         const server = setupServer(
-            http.get(`${modpacksChBaseUrl}/modpack/${modpackId.id}`, () => {
-                const manifest: ModpacksChModpackManifest = { name: "test pack" };
+            http.get(`${ftbApiBaseUrl}/modpack/${modpackId.id}`, () => {
+                const manifest: FTBModpackManifest = { name: "test pack" };
                 return HttpResponse.json(manifest);
             }),
-            http.get(`${modpacksChBaseUrl}/modpack/${modpackId.id}/${modpackId.version}`, () => {
-                const versionManifest: ModpacksChModpackVersionManifest = { files: Object.values(modpacksChFileEndpoints) }
+            http.get(`${ftbApiBaseUrl}/modpack/${modpackId.id}/${modpackId.version}`, () => {
+                const versionManifest: FTBModpackVersionManifest = { files: Object.values(ftbFileEndpoints) }
                 return HttpResponse.json(versionManifest);
             }),
-            ...[ modpacksChFileEndpoints.mod1, modpacksChFileEndpoints.options].map(file => {
+            ...[ ftbFileEndpoints.mod1, ftbFileEndpoints.options].map(file => {
                 return http.get(file.url!, () => HttpResponse.text(file.content));
             }),
             ...curseForgeEndpoints.map(({ endpoint, response }) => {
@@ -112,13 +112,13 @@ describe("modpacks.ch command", () => {
 
         server.listen();
 
-        await run(["node", "src/app.ts", "modpacks.ch", "--modpack-id", "1", "--modpack-version", "1"]);
+        await run(["node", "src/app.ts", "ftb", "--modpack-id", "1", "--modpack-version", "1"]);
 
         server.close();
 
         expect(vol.readFileSync("mods/mods/mod1.jar", "utf-8")).toBe("test");
         expect(vol.readFileSync("mods/mods/mod2.jar", "utf-8")).toBe("test2");
-        expect(vol.readFileSync("mods/config/options.txt", "utf-8")).toBe(modpacksChFileEndpoints.options.content);
+        expect(vol.readFileSync("mods/config/options.txt", "utf-8")).toBe(ftbFileEndpoints.options.content);
 
         expect(consoleSpy).toHaveBeenLastCalledWith(
             expect.objectContaining({

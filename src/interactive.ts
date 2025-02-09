@@ -23,8 +23,8 @@ export function inquireModProvider(): Promise<ModProviderName> {
                 value: "curseforge" as ModProviderName
             },
             {
-                name: "modpacks.ch (FTB)",
-                value: "modpacks.ch" as ModProviderName
+                name: "FTB",
+                value: "ftb" as ModProviderName
             }
         ]
     })

@@ -1,7 +1,7 @@
 import { Container, interfaces } from "inversify";
 import { ABSTRACTIONS } from "../abstractions.js";
 import { CurseForgeModProviderConfiguration } from "../mod-providers/curseforge/curseforge-types.js";
-import { ModpacksChModProviderConfiguration, ModpacksChModpackIdentifier } from "../mod-providers/modpacks.ch/modpacks.ch-types.js";
+import { FTBModpackIdentifier, FTBModProviderConfiguration } from "../mod-providers/ftb/ftb-types.js";
 import { getJsonConfiguration } from "./json-configuration-source.js";
 import { getDefaultConfiguration } from "./default-configuration-source.js";
 import { getArgumentConfiguration } from "./arguments-configuration-source.js";
@@ -11,13 +11,12 @@ import { DeepPartial } from "../utils.js";
 import { getEnvironmentConfiguration } from "./environment-configuration-source.js";
 import { LoggingConfiguration } from "../logging.js";
 import * as _ from "lodash-es";
-import { HttpClient } from "../http-client.js";
 
 export interface Configuration {
     logging: LoggingConfiguration
     downloads: DownloadConfiguration
     curseforge: CurseForgeModProviderConfiguration,
-    "modpacks.ch": ModpacksChModProviderConfiguration,
+    ftb: FTBModProviderConfiguration
     confirmAll: boolean,
     configFile: string
 }
@@ -40,12 +39,12 @@ export async function loadConfiguration(provider: ModProviderName, argv: string[
         getDefaultConfiguration()
     ]);
 
-    if (provider == "modpacks.ch") {
-        const modpack: Partial<ModpacksChModpackIdentifier> = config["modpacks.ch"]?.modpack ?? {};
+    if (provider == "modpacks.ch" || provider == "ftb") {
+        const modpack: Partial<FTBModpackIdentifier> = config.ftb?.modpack ?? {};
         modpack.id ??= await inputNumber("Enter the modpack id: ");
         modpack.version ??= await inputNumber("Enter the modpack version: ");
 
-        config["modpacks.ch"].modpack = modpack as ModpacksChModpackIdentifier;
+        config.ftb.modpack = modpack as FTBModpackIdentifier;
     }
 
     return config as Configuration;
@@ -55,6 +54,6 @@ export function registerConfiguration(container: Container, config: Configuratio
     container.bind(ABSTRACTIONS.Configuration.Downloads).toConstantValue(config.downloads);
     container.bind(ABSTRACTIONS.Configuration.Logging).toConstantValue(config.logging);
     container.bind(ABSTRACTIONS.Configuration.Providers.CurseForge).toConstantValue(config.curseforge);
-    container.bind(ABSTRACTIONS.Configuration.Providers.ModpacksCh).toConstantValue(config["modpacks.ch"]);
+    container.bind(ABSTRACTIONS.Configuration.Providers.FTB).toConstantValue(config.ftb);
     container.bind(ABSTRACTIONS.Configuration.All).toConstantValue(config);
 }

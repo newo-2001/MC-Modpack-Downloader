@@ -2,7 +2,6 @@ import { Container } from "inversify";
 import "reflect-metadata";
 import { DownloadOrchestrator } from "./download-orchestrator.js";
 import { CurseForgeModProvider } from "./mod-providers/curseforge/curseforge-mod-provider.js";
-import { ModpacksChModProvider } from "./mod-providers/modpacks.ch/modpacks.ch-mod-provider.js";
 import { LocalModProvider } from "./mod-providers/local/local-mod-provider.js";
 import { exit } from "process";
 import { Logger } from "winston";
@@ -15,10 +14,12 @@ import { ABSTRACTIONS } from "./abstractions.js";
 import { loadConfiguration, registerConfiguration } from "./configuration/configuration.js";
 import * as _ from "lodash-es";
 import { HttpClient } from "./http-client.js";
+import { FTBModProvider } from "./mod-providers/ftb/ftb-mod-provider.js";
 
 const providers = {
     "curseforge": CurseForgeModProvider,
-    "modpacks.ch": ModpacksChModProvider,
+    "modpacks.ch": FTBModProvider,
+    "ftb": FTBModProvider,
     "local": LocalModProvider
 };
 
@@ -33,7 +34,7 @@ async function getProviderName(provider?: string): Promise<ModProviderName> {
 }
 
 export async function run(argv: string[] = process.argv) {
-    const provider: ModProviderName = await getProviderName(argv[2]);
+    let provider: ModProviderName = await getProviderName(argv[2]);
 
     const config = await loadConfiguration(provider, argv);
 
@@ -50,8 +51,8 @@ export async function run(argv: string[] = process.argv) {
         }
     });
 
-    container.bind(ABSTRACTIONS.HttpClients["Modpacks.ch"]).toDynamicValue(ctx => {
-        return new HttpClient("https://api.modpacks.ch/public", {}, ctx.container.get(Logger))
+    container.bind(ABSTRACTIONS.HttpClients.FTB).toDynamicValue(ctx => {
+        return new HttpClient("https://api.feed-the-beast.com/v1/modpacks/public", {}, ctx.container.get(Logger))
     }).inTransientScope();
 
     const logger = container.get(Logger);
@@ -62,6 +63,11 @@ export async function run(argv: string[] = process.argv) {
 
         let redactedConfig = _.cloneDeep(config) as any;
         delete redactedConfig.curseforge.apiKey;
+
+        if (provider == "modpacks.ch") {
+            logger.warn("The 'modpacks.ch' provider is depcrecated, falling back to ftb")
+            provider = "ftb";
+        }
 
         logger.debug(`Using configuration: ${JSON.stringify(redactedConfig)}`);
     }
@@ -77,7 +83,7 @@ export async function run(argv: string[] = process.argv) {
     }
 
     const modpackId = {
-        "modpacks.ch": config["modpacks.ch"].modpack,
+        "ftb": config.ftb.modpack,
         "curseforge": config.curseforge.manifestFile,
         "local": "debug"
     }[provider];

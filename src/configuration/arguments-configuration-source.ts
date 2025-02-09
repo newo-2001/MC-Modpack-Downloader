@@ -50,10 +50,10 @@ export function getArgumentConfiguration(provider: ModProviderName, argv: string
         "config-file": { type: String, optional: true, alias: 'c', description: "The settings.json file path" }
     };
 
-    if (provider == "modpacks.ch") {
+    if (provider == "modpacks.ch" || provider == "ftb") {
         _.defaults(argumentConfig, {
-            "modpack-id": { type: int, optional: true, description: "The modpack id of the modpacks.ch modpack to download" },
-            "modpack-version": { type: int, optional: true, description: "The modpack version of the modpacks.ch modpack to download" }
+            "modpack-id": { type: int, optional: true, description: "The modpack id of the FTB modpack to download" },
+            "modpack-version": { type: int, optional: true, description: "The modpack version of the FTB modpack to download" }
         })
     }
 
@@ -73,8 +73,8 @@ export function getArgumentConfiguration(provider: ModProviderName, argv: string
     );
 
     const bindings: { [Key in keyof Arguments]: PartialConfiguration } = {
-        "modpack-id": { "modpacks.ch": { modpack: { id: args["modpack-id"] } } },
-        "modpack-version": { "modpacks.ch": { modpack: { version: args["modpack-version"] } } },
+        "modpack-id": { ftb: { modpack: { id: args["modpack-id"] } } },
+        "modpack-version": { ftb: { modpack: { version: args["modpack-version"] } } },
         "manifest-file": { curseforge: { manifestFile: args["manifest-file"] } },
         "yes": { confirmAll: args["yes"] },
         "concurrency": { downloads: { concurrency: args["concurrency"] } },

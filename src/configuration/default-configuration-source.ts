@@ -10,7 +10,7 @@ export function getDefaultConfiguration(): PartialConfiguration {
             concurrency: 20,
             outputDirectory: "mods",
         },
-        ["modpacks.ch"]: {},
+        ftb: {},
         curseforge: {
             manifestFile: "manifest.json"
         },

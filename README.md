@@ -42,7 +42,7 @@ If this is your first time running the script you have to perform some additiona
 > The API key you need is **not** one of the "API tokens" you can generate from your profile on the main CurseForge website; you need to use the link above to go to CurseForge for Studios and copy the key there into your settings.
 
 > [!IMPORTANT]
-> The above step is still required, even if you don't intend on downloading from CurseForge. Other providers (modpacks.ch) might delegate the download to CurseForge behind the scenes.
+> The above step is still required, even if you don't intend on downloading from CurseForge. Other providers (FTB) might delegate the download to CurseForge behind the scenes.
 
 4. Replace the `API_KEY_HERE` under the curseforge section with your api key in the `settings.json` file.
 
@@ -50,11 +50,11 @@ If this is your first time running the script you have to perform some additiona
 > It might take several minutes for CurseForge to start accepting the API key after initial acquisition.
 
 ## Running the script
-Before downloading a modpack, you need to figure out where you are downloading it from. Currently CurseForge and modpacks.ch (FTB) are supported. If you are sourcing your modpacks from a different provider, please let me know by opening a [GitHub issue](https://github.com/newo-2001/MC-Modpack-Downloader/issues), I will try to add support for it.
+Before downloading a modpack, you need to figure out where you are downloading it from. Currently CurseForge and FTB are supported. If you are sourcing your modpacks from a different provider, please let me know by opening a [GitHub issue](https://github.com/newo-2001/MC-Modpack-Downloader/issues), I will try to add support for it.
 
 There are slight differences between the two:
-- CurseForge uses a manifest file to identify a modpack, whereas modpacks.ch uses a pack id and version number
-- For CurseForge this script only downloads the `.jar` files for the mods, as the other files are provided in the archive containing the `manifest.json` file, whereas for modpacks.ch, all of the files for the modpack are downloaded by the script.
+- CurseForge uses a manifest file to identify a modpack, whereas FTB uses a pack id and version number
+- For CurseForge this script only downloads the `.jar` files for the mods, as the other files are provided in the archive containing the `manifest.json` file, whereas for FTB, all of the files for the modpack are downloaded by the script.
 
 If you've used the script before, make sure to clean out the output directory first. Specific instructions for your provider of choice follow below.
 
@@ -62,7 +62,7 @@ If you are downloading from CurseForge:
 1. Download the archive for your modpack of choice from the [CurseForge website](https://www.curseforge.com/minecraft/search?class=modpacks).
 2. Place the `manifest.json` file contained in the archive in the root directory of the project.
 
-If you are downloading from modpacks.ch:
+If you are downloading from FTB:
 1. Locate the modpack id and version number on the [feed-the-beast website](https://www.feed-the-beast.com/). It looks like the image below:
 
     ![](docs/images/ftb_pack_id.png)
@@ -92,7 +92,7 @@ The downloaded files can be used with virtually any launcher that allows for cre
 4. Press `Install Forge` (or Fabric if applicable), you probably want the recommended version.
 5. Press the `Open .minecraft` button.
 6. - If you downloaded the files from CurseForge you want to create a new directory called `mods` and drag the files downloaded by the script in here. You will also want to drag the rest of the files that came with the `.zip` besides `manifest.json` into this directory *next to the mods folder*.
-   - If you downloaded with modpacks.ch you want to drag all the files downloaded by the script into this directory directly.
+   - If you downloaded with FTB you want to drag all the files downloaded by the script into this directory directly.
 
 # Configuration
 The script combines configuration options from several sources with decreasing precedence:
@@ -142,13 +142,13 @@ The `settings.json` file provides several options to customize your experience. 
 ## Arguments
 You can use an additional positional argument for the provider to skip the provider selection prompt:
 - `npm start curseforge` for CurseForge
-- `npm start modpacks.ch` for modpacks.ch
+- `npm start ftb` for FTB
 
 Additionally the following optional options can be specified:
 - `--help` or `-h` - Show the usage guide (only these options)
 - `--yes` or `-y` - Automatically confirm all confirmation prompts
-- `--modpack-id <number>` - The id for the modpack (only when using modpacks.ch provider)
-- `--modpack-version <number>` - The version number of the modpack (only when using modpacks.ch provider)
+- `--modpack-id <number>` - The id for the modpack (only when using FTB provider)
+- `--modpack-version <number>` - The version number of the modpack (only when using FTB provider)
 - `--concurrency <number>` - The amount of downloads that will happen at the same time
 - `--output-directory <path>` or `-o <path>` - The directory to store the downloaded files in
 - `--log-file <path>` - The file to log to
@@ -160,9 +160,9 @@ Additionally the following optional options can be specified:
 > If you are using any of the options start with '-' or '--', an additional '--' following 'npm start' is required to indicate the start of the arguments to the actual script, this can be seen in the examples below.
 
 ### Examples
-Download the modpack with id 1 and version 2 from modpacks.ch and automatically confirm all confirmation prompts:
+Download the modpack with id 1 and version 2 from FTB and automatically confirm all confirmation prompts:
 ```
-npm start -- modpacks.ch --modpack-id 1 --modpack-version 2 -y
+npm start -- ftb --modpack-id 1 --modpack-version 2 -y
 ```
 
 ## Environment variables
@@ -173,9 +173,10 @@ The following features are considered deprecated and might be removed in a futur
 
 | deprecated feature | alternative | deprecated since |
 | --- | --- | --- |
-| The npm scripts `npm run curseforge` and `npm run modpacks.ch` | Use the alternatives `npm start curseforge` and `npm start modpacks.ch` | v1.1.0 |
-| The `modpacks.ch -> modpack` settings block in `settings.json` | Use the interactive prompt or command line arguments instead | v1.2.0 |
+| The npm scripts `npm run curseforge` and `npm run ftb` | Use the alternatives `npm start curseforge` and `npm start ftb` | v1.1.0 |
+| The `ftb -> modpack` settings block in `settings.json` | Use the interactive prompt or command line arguments instead | v1.2.0 |
 | The `curseforge_api_key` environment variable for `docker run`| Use the environment variable `MCDL_CURSEFORGE_API_KEY` instead | v2.1.0 |
+| The `modpacks.ch` mod provider | Replaced with FTB provider. the `modpacks.ch` provider will now delegate to the FTB provider | v2.2.0
 
 # Contributing
 Contributions are always welcome and go through the regular GitHub PR process.

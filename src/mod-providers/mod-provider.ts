@@ -1,7 +1,6 @@
-import { ParsedPath } from "path";
 import { Readable } from "stream"
 
-export type ModProviderName = "curseforge" | "modpacks.ch" | "local";
+export type ModProviderName = "curseforge" | "modpacks.ch" | "ftb" | "local";
 
 export interface FileDownload {
     path: string,

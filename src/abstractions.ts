@@ -2,7 +2,8 @@ export const ABSTRACTIONS = {
     Configuration: {
         Providers: {
             CurseForge: Symbol("Configuration.CurseForge"),
-            ModpacksCh: Symbol("Configuration.ModpacksCh")
+            ModpacksCh: Symbol("Configuration.ModpacksCh"),
+            FTB: Symbol("Configuration.FTB")
         },
         Downloads: Symbol("Configuration.Downloads"),
         Logging: Symbol("Configuration.Logging"),
@@ -15,6 +16,6 @@ export const ABSTRACTIONS = {
     },
     HttpClients: {
         CurseForge: Symbol("HttpClients.CurseForge"),
-        "Modpacks.ch": Symbol("HttpClients.Modpacks.ch")
+        FTB: Symbol("HttpClients.FTB")
     }
 };

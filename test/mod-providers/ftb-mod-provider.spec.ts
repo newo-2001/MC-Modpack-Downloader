@@ -1,30 +1,30 @@
 import "reflect-metadata";
 import { describe, test, beforeEach, expect } from "vitest";
-import { ModpacksChModProvider } from "../../src/mod-providers/modpacks.ch/modpacks.ch-mod-provider";
 import { Mock } from "typemoq";
 import { HttpClient } from "../../src/http-client";
 import { Logger } from "winston";
 import { ModProvider } from "../../src/mod-providers/mod-provider";
 import { CurseForgeModIdentifier } from "../../src/mod-providers/curseforge/curseforge-types";
-import { ModpacksChModManifest, ModpacksChModpackManifest, ModpacksChModpackVersionManifest } from "../../src/mod-providers/modpacks.ch/modpacks.ch-types";
 import { Readable } from "node:stream";
 import { NoDownloadException } from "../../src/exceptions";
 import path from "node:path";
+import { FTBModProvider } from "../../src/mod-providers/ftb/ftb-mod-provider";
+import { FTBModManifest, FTBModpackManifest, FTBModpackVersionManifest } from "../../src/mod-providers/ftb/ftb-types";
 
 const loggerMock = Mock.ofType<Logger>();
 const httpClientMock = Mock.ofType<HttpClient>();
 const curseForgeProviderMock = Mock.ofType<ModProvider<CurseForgeModIdentifier, string>>();
-let sut: ModpacksChModProvider;
+let sut: FTBModProvider;
 
 beforeEach(() => {
     httpClientMock.reset();
     curseForgeProviderMock.reset();
-    sut = new ModpacksChModProvider(curseForgeProviderMock.object, httpClientMock.object, loggerMock.object);
+    sut = new FTBModProvider(curseForgeProviderMock.object, httpClientMock.object, loggerMock.object);
 });
 
 describe("downloadMod()", () => {
     test("downloads the content from the specified url when present", async () => {
-        const mod: ModpacksChModManifest = {
+        const mod: FTBModManifest = {
             path: "./config/test-mod/",
             name: "config.json",
             url: "https://example.com/config.json"
@@ -49,7 +49,7 @@ describe("downloadMod()", () => {
     });
 
     test("downloads the content from CurseForge if the curseforge field is present", async () => {
-        const mod: ModpacksChModManifest = {
+        const mod: FTBModManifest = {
             path: "./mods/",
             name: "a.jar",
             curseforge: {
@@ -82,7 +82,7 @@ describe("downloadMod()", () => {
     });
 
     test("throws NoDownloadException if url and curseforge are not present", () => {
-        const mod: ModpacksChModManifest = {
+        const mod: FTBModManifest = {
             path: "./mods/",
             name: "a.jar"
         };
@@ -93,7 +93,7 @@ describe("downloadMod()", () => {
 });
 
 describe("getManifest()", () => {
-    const mod: ModpacksChModManifest = {
+    const mod: FTBModManifest = {
         path: "./mods/",
         name: "a.jar",
         url: "https://example.com/a.jar"
@@ -101,7 +101,7 @@ describe("getManifest()", () => {
     
     function setupValidModpack() {
         httpClientMock.setup(x =>
-            x.get<ModpacksChModpackManifest>("/modpack/1")
+            x.get<FTBModpackManifest>("/modpack/1")
         ).returns(() => Promise.resolve({
             status: "success",
             name: "Test pack"
@@ -110,14 +110,14 @@ describe("getManifest()", () => {
 
     function setupValidVersion() {
         httpClientMock.setup(x =>
-            x.get<ModpacksChModpackVersionManifest>("/modpack/1/1")
+            x.get<FTBModpackVersionManifest>("/modpack/1/1")
         ).returns(() => Promise.resolve({
             status: "success",
             files: [ mod ]
         }));
     }
 
-    test("called with a valid id obtains the modpack manifest from the modpacks.ch API", async () => {
+    test("called with a valid id obtains the modpack manifest from the FTB API", async () => {
         setupValidModpack();
         setupValidVersion();
 
@@ -158,6 +158,6 @@ describe("getManifest()", () => {
     });
 });
 
-test("getName() return 'modpacks.ch'", () => {
-    expect(sut.getName()).toBe("modpacks.ch");
+test("getName() return 'FTB'", () => {
+    expect(sut.getName()).toBe("FTB");
 });
