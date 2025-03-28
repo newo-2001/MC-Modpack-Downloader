@@ -23,9 +23,13 @@ beforeEach(() => {
 });
 
 describe("downloadMod()", () => {
-    test("downloads the content from the specified url when present", async () => {
+    test.each([
+        "./config/test-mod/",
+        "./config/test-mod",
+        "config/test-mod"
+    ])("downloads the content from the specified url to %s when present", async (filePath: string) => {
         const mod: FTBModManifest = {
-            path: "./config/test-mod/",
+            path: filePath,
             name: "config.json",
             url: "https://example.com/config.json"
         };

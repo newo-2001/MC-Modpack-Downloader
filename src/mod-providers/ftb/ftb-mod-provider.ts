@@ -28,7 +28,9 @@ export class FTBModProvider implements ModProvider<FTBModManifest, FTBModpackIde
     ) {}
 
     public async downloadMod(mod: FTBModManifest): Promise<FileDownload> {
-        const dirname = mod.path.substring(2, mod.path.length-1);
+        const start = mod.path.startsWith("./") ? 2 : 0;
+        const end = mod.path.endsWith("/") ? mod.path.length - 1 : mod.path.length;
+        const dirname = mod.path.substring(start, end);
         const downloadPath = path.join(dirname, mod.name);
 
         if (mod.url) {

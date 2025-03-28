@@ -1,6 +1,6 @@
 {
   "name": "mcmodpackdownloader",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Download minecraft modpacks without the need for the FTB app or Overwolf.",
   "type": "module",
   "scripts": {
